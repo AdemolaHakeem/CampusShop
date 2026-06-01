@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { loginUser, resendVerification } from '../services/auth';
+import { loginUser, resendVerification, resetPassword } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
 
 const { Title, Text, Paragraph } = Typography;
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetForm] = Form.useForm();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
@@ -89,6 +92,7 @@ const LoginPage = () => {
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Please enter your password' }]}
+            style={{ marginBottom: 12 }}
           >
             <Input.Password
               prefix={<LockOutlined />}
@@ -96,6 +100,16 @@ const LoginPage = () => {
               autoComplete="current-password"
             />
           </Form.Item>
+
+          <div style={{ textAlign: 'right', marginBottom: 24 }}>
+            <a
+              onClick={() => setForgotPasswordVisible(true)}
+              className="auth-link"
+              style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+            >
+              Forgot Password?
+            </a>
+          </div>
 
           <Form.Item>
             <Button
@@ -117,6 +131,72 @@ const LoginPage = () => {
           </Text>
         </div>
       </div>
+
+      <Modal
+        title="Reset Password 🔒"
+        open={forgotPasswordVisible}
+        onCancel={() => {
+          setForgotPasswordVisible(false);
+          resetForm.resetFields();
+        }}
+        footer={null}
+        centered
+        width={400}
+      >
+        <div style={{ marginTop: 16 }}>
+          <Paragraph type="secondary" style={{ marginBottom: 24 }}>
+            Enter your school email below. We'll send you a secure link to reset your password.
+          </Paragraph>
+          
+          <Form
+            form={resetForm}
+            layout="vertical"
+            requiredMark={false}
+            onFinish={async (values) => {
+              setResetLoading(true);
+              try {
+                await resetPassword(values.email);
+                message.success('Password reset link sent! Check your email inbox ✉️');
+                setForgotPasswordVisible(false);
+                resetForm.resetFields();
+              } catch (err) {
+                console.error('Reset password error:', err);
+                message.error(err.message || 'Failed to send reset link. Please try again.');
+              } finally {
+                setResetLoading(false);
+              }
+            }}
+            className="auth-form"
+          >
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: 'Please enter your email' },
+                { type: 'email', message: 'Please enter a valid email' },
+              ]}
+            >
+              <Input 
+                prefix={<MailOutlined />} 
+                placeholder="Enter your school email" 
+                autoComplete="email"
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={resetLoading}
+                block
+                className="auth-btn"
+                style={{ marginTop: 8 }}
+              >
+                Send Reset Link
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      </Modal>
     </div>
   );
 };

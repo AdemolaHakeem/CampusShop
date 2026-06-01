@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout } from 'antd';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -9,23 +9,27 @@ import SignupPage from './pages/SignupPage';
 import MarketplacePage from './pages/MarketplacePage';
 import AddListingPage from './pages/AddListingPage';
 import MyListingsPage from './pages/MyListingsPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const { Content } = Layout;
 
 const AppContent = () => {
   const { currentUser } = useAuth();
+  const location = useLocation();
 
   // Pages that should NOT show the navbar
-  const noNavbarRoutes = ['/', '/login', '/signup'];
+  const noNavbarRoutes = ['/', '/login', '/signup', '/reset-password'];
+  const showNavbar = currentUser && !noNavbarRoutes.includes(location.pathname);
 
   return (
     <Layout className="app-layout">
-      {currentUser && <Navbar />}
+      {showNavbar && <Navbar />}
       <Content className="app-content">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route
             path="/market"
             element={
