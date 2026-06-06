@@ -325,16 +325,140 @@ body::before {
 }
 
 .marketplace-hero {
-  padding: 32px 32px 20px;
+  position: relative;
+  padding: 36px 32px 20px;
+  overflow: hidden;
+}
+
+.marketplace-hero-bg {
+  position: absolute;
+  top: -60px;
+  left: -20px;
+  right: -20px;
+  height: 260px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(0, 98, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 0%, rgba(15, 182, 89, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(0, 98, 255, 0.04) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .marketplace-hero-content {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.marketplace-hero-title-row {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.marketplace-hero-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 98, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.marketplace-hero-title {
+  margin: 0 !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.4px !important;
+}
+
+.marketplace-hero-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 14px !important;
+}
+
+/* Stats Row */
+.marketplace-stats-row {
+  padding: 0 32px 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.marketplace-hero .ant-typography {
+.marketplace-stat-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  transition: all 0.3s ease;
+}
+
+.marketplace-stat-card:hover {
+  border-color: rgba(0, 98, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.marketplace-stat-card .ant-statistic-title {
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  margin-bottom: 4px !important;
+}
+
+.marketplace-stat-card-accent {
+  background: var(--accent-gradient);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.marketplace-stat-card-accent .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.marketplace-stat-cta {
+  padding: 0 !important;
+  height: auto !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.marketplace-stat-cta:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Category Pills */
+.marketplace-category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.marketplace-pill {
+  font-size: 12px !important;
+  padding: 4px 14px !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  background: #fff !important;
+  color: var(--text-secondary) !important;
+  transition: all 0.2s ease !important;
+  user-select: none;
+}
+
+.marketplace-pill:hover {
+  border-color: rgba(0, 98, 255, 0.25) !important;
   color: var(--text-primary) !important;
+}
+
+.marketplace-pill-active {
+  background: rgba(0, 98, 255, 0.06) !important;
+  border-color: rgba(0, 98, 255, 0.3) !important;
+  color: var(--accent) !important;
+  font-weight: 600 !important;
 }
 
 .marketplace-filters {
