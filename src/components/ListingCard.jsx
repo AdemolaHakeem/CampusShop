@@ -1,5 +1,5 @@
-import { Card, Tag, Button, Typography, Space, Tooltip } from 'antd';
-import { WhatsAppOutlined, ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Tag, Typography, Space, Tooltip } from 'antd';
+import { MessageCircle, Clock, Trash2 } from 'lucide-react';
 import { formatPrice, getWhatsAppLink, timeAgo } from '../utils/helpers';
 import { CATEGORY_COLORS } from '../utils/categories';
 
@@ -26,7 +26,7 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
     cardActions.push(
       <Tooltip title="Contact via WhatsApp" key="whatsapp">
         <a href={getWhatsAppLink(sellerPhone, title)} target="_blank" rel="noopener noreferrer">
-          <WhatsAppOutlined style={{ color: '#25D366', fontSize: 18 }} />
+          <MessageCircle size={18} color="#25D366" />
         </a>
       </Tooltip>
     );
@@ -35,8 +35,10 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
   if (showActions && onDelete) {
     cardActions.push(
       <Tooltip title="Delete listing" key="delete">
-        <DeleteOutlined
-          style={{ color: '#ff4d4f', fontSize: 16 }}
+        <Trash2
+          size={16}
+          color="#ff4d4f"
+          style={{ cursor: 'pointer' }}
           onClick={() => onDelete(listing.id)}
         />
       </Tooltip>
@@ -79,7 +81,7 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
         />
         <div className="listing-card-footer">
           <Text type="secondary" style={{ fontSize: 12 }}>
-            <ClockCircleOutlined style={{ marginRight: 4 }} />
+            <Clock size={12} style={{ marginRight: 4 }} />
             {timeAgo(createdAt)}
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>

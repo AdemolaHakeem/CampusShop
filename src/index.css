@@ -1239,6 +1239,11 @@ body::before {
   }
 }
 
+/* ========== CAMPUS SEARCH SPINNER ========== */
+@keyframes campusSpin {
+  to { transform: rotate(360deg); }
+}
+
 /* ========== SELECTION ========== */
 ::selection {
   background: rgba(102, 126, 234, 0.2);

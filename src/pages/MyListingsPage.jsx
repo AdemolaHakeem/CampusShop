@@ -1,12 +1,12 @@
 import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button } from 'antd';
-import { UnorderedListOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { List, AlertCircle, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserListings } from '../hooks/useListings';
 import { deleteListing } from '../services/listings';
 import ListingCard from '../components/ListingCard';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { confirm } = Modal;
 
 const MyListingsPage = () => {
@@ -17,7 +17,7 @@ const MyListingsPage = () => {
   const handleDelete = (id) => {
     confirm({
       title: 'Delete this listing?',
-      icon: <ExclamationCircleOutlined />,
+      icon: <AlertCircle size={20} />,
       content: 'This action cannot be undone. The listing will be permanently removed.',
       okText: 'Delete',
       okType: 'danger',
@@ -47,7 +47,7 @@ const MyListingsPage = () => {
     <div className="my-listings-page">
       <div className="page-header">
         <Space align="center" size={12}>
-          <UnorderedListOutlined style={{ fontSize: 28, color: '#0062ff' }} />
+          <List size={28} color="#0062ff" />
           <div>
             <Title level={2} style={{ margin: 0 }}>My Listings</Title>
             <Text type="secondary">
@@ -68,7 +68,7 @@ const MyListingsPage = () => {
               </Space>
             }
           >
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/add-listing')}>
+            <Button type="primary" icon={<Plus size={16} />} onClick={() => navigate('/add-listing')}>
               Create Listing
             </Button>
           </Empty>

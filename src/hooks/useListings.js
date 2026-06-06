@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import { subscribeToAllListings, subscribeToUserListings } from '../services/listings';
+import { useAuth } from '../context/AuthContext';
 
 export const useListings = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    const unsubscribe = subscribeToAllListings((data) => {
+    const campusId = currentUser?.campusId || null;
+    const unsubscribe = subscribeToAllListings(campusId, (data) => {
       setListings(data);
       setLoading(false);
     });
     return unsubscribe;
-  }, []);
+  }, [currentUser?.campusId]);
 
   return { listings, loading };
 };
@@ -19,15 +22,17 @@ export const useListings = () => {
 export const useUserListings = (userId) => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (!userId) return;
-    const unsubscribe = subscribeToUserListings(userId, (data) => {
+    const campusId = currentUser?.campusId || null;
+    const unsubscribe = subscribeToUserListings(userId, campusId, (data) => {
       setListings(data);
       setLoading(false);
     });
     return unsubscribe;
-  }, [userId]);
+  }, [userId, currentUser?.campusId]);
 
   return { listings, loading };
 };

@@ -4,9 +4,8 @@ import {
   Form, Input, InputNumber, Select, Button, Typography, message, Card, Space, Row, Col, Upload
 } from 'antd';
 import {
-  TagOutlined, DollarOutlined, FileTextOutlined, AppstoreOutlined,
-  PictureOutlined, PhoneOutlined, PlusOutlined, ArrowLeftOutlined, LoadingOutlined
-} from '@ant-design/icons';
+  Tag, DollarSign, LayoutGrid, Image, Phone, Plus, ArrowLeft, Loader2
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { addListing, uploadListingImage } from '../services/listings';
 import { CATEGORIES } from '../utils/categories';
@@ -52,6 +51,7 @@ const AddListingPage = () => {
         sellerId: currentUser.uid,
         sellerName: currentUser.displayName || 'Anonymous',
         sellerPhone: values.sellerPhone || '',
+        campusId: currentUser.campusId || null,
       });
       message.success('Listing created successfully! 🎉');
       form.resetFields();
@@ -69,14 +69,14 @@ const AddListingPage = () => {
       <div className="page-header">
         <Button
           type="text"
-          icon={<ArrowLeftOutlined />}
+          icon={<ArrowLeft size={16} />}
           onClick={() => navigate('/market')}
           style={{ color: 'var(--text-secondary)' }}
         >
           Back to Marketplace
         </Button>
         <Title level={2} style={{ margin: '8px 0 0' }}>
-          <PlusOutlined style={{ marginRight: 8 }} />
+          <Plus size={20} style={{ marginRight: 8 }} />
           Create New Listing
         </Title>
         <Paragraph type="secondary" style={{ margin: 0 }}>
@@ -101,7 +101,7 @@ const AddListingPage = () => {
                 rules={[{ required: true, message: 'Give your item a title' }]}
               >
                 <Input
-                  prefix={<TagOutlined />}
+                  prefix={<Tag size={16} />}
                   placeholder="e.g., MacBook Pro 2023"
                   maxLength={100}
                   showCount
@@ -115,7 +115,7 @@ const AddListingPage = () => {
                 rules={[{ required: true, message: 'Set a price' }]}
               >
                 <InputNumber
-                  prefix={<DollarOutlined />}
+                  prefix={<DollarSign size={16} />}
                   placeholder="0"
                   min={0}
                   max={10000000}
@@ -149,7 +149,7 @@ const AddListingPage = () => {
               >
                 <Select
                   placeholder="Select a category"
-                  suffixIcon={<AppstoreOutlined />}
+                  suffixIcon={<LayoutGrid size={14} />}
                   options={CATEGORIES.map((c) => ({ value: c, label: c }))}
                 />
               </Form.Item>
@@ -161,27 +161,27 @@ const AddListingPage = () => {
                 tooltip="Include country code, e.g., +2348012345678"
               >
                 <Input
-                  prefix={<PhoneOutlined />}
+                  prefix={<Phone size={16} />}
                   placeholder="+234..."
                 />
               </Form.Item>
             </Col>
           </Row>
 
-          <Card 
+          <Card
             size="small"
-            style={{ 
-              marginBottom: 24, 
-              borderRadius: 'var(--radius-md)', 
+            style={{
+              marginBottom: 24,
+              borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border-color)',
               background: 'rgba(255,255,255,0.6)',
               overflow: 'hidden'
             }}
-            bodyStyle={{ padding: 20 }}
+            styles={{ body: { padding: 20 } }}
           >
             <div style={{ marginBottom: 12 }}>
               <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                <PictureOutlined style={{ marginRight: 8, color: 'var(--accent)' }} />
+                <Image size={16} style={{ marginRight: 8, color: 'var(--accent)' }} />
                 Item Photo
               </span>
               <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: 8 }}>
@@ -203,17 +203,17 @@ const AddListingPage = () => {
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    <img 
-                      src={imageUrl} 
-                      alt="Uploaded Preview" 
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                    <img
+                      src={imageUrl}
+                      alt="Uploaded Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                     <Button
                       type="primary"
                       danger
                       shape="circle"
                       size="small"
-                      icon={<PlusOutlined style={{ transform: 'rotate(45deg)' }} />}
+                      icon={<Plus size={14} style={{ transform: 'rotate(45deg)' }} />}
                       onClick={() => {
                         setImageUrl('');
                         form.setFieldsValue({ imageURL: '' });
@@ -246,9 +246,9 @@ const AddListingPage = () => {
                   >
                     <p style={{ margin: '0 0 8px 0' }}>
                       {uploading ? (
-                        <LoadingOutlined style={{ fontSize: 24, color: 'var(--accent)' }} />
+                        <Loader2 size={24} color="var(--accent)" className="animate-spin" />
                       ) : (
-                        <PictureOutlined style={{ fontSize: 24, color: 'var(--accent)' }} />
+                        <Image size={24} color="var(--accent)" />
                       )}
                     </p>
                     <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px 0' }}>
@@ -260,21 +260,21 @@ const AddListingPage = () => {
                   </Upload.Dragger>
                 )}
               </Col>
-              
+
               <Col xs={24} sm={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <div style={{ marginBottom: 8 }}>
                   <Text strong style={{ fontSize: '12px', color: 'var(--text-primary)' }}>
                     Or Paste Image URL
                   </Text>
                 </div>
-                
+
                 <Form.Item
                   name="imageURL"
                   noStyle
                   rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
                 >
                   <Input
-                    prefix={<PictureOutlined style={{ color: 'var(--text-secondary)' }} />}
+                    prefix={<Image size={16} color="var(--text-secondary)" />}
                     placeholder="https://example.com/image.jpg"
                     onChange={(e) => {
                       setImageUrl(e.target.value);
@@ -282,7 +282,7 @@ const AddListingPage = () => {
                     style={{ height: '40px', borderRadius: 'var(--radius-md)' }}
                   />
                 </Form.Item>
-                
+
                 <Text type="secondary" style={{ fontSize: '11px', marginTop: 8 }}>
                   If you have a direct link to an image online, paste it here instead.
                 </Text>
@@ -297,7 +297,7 @@ const AddListingPage = () => {
               loading={loading}
               block
               className="submit-btn"
-              icon={<PlusOutlined />}
+              icon={<Plus size={16} />}
             >
               Publish Listing
             </Button>

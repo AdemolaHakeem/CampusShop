@@ -1,21 +1,34 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Typography, message, Divider, Space, Modal } from 'antd';
-import { MailOutlined, LockOutlined, UserOutlined, PhoneOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Typography, message, Modal, Divider } from 'antd';
+import { Mail, Lock, User, Phone, Building2 } from 'lucide-react';
 import { registerUser, resendVerification } from '../services/auth';
+import CampusSearch from '../components/CampusSearch';
 import logoIcon from '../assets/CampusShop2.0.png';
 
 const { Title, Text, Paragraph } = Typography;
 
 const SignupPage = () => {
   const [loading, setLoading] = useState(false);
+  const [campusId, setCampusId] = useState(null);
+  const [campusName, setCampusName] = useState('');
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
+    // --- Strict campus validation (must be selected from autocomplete) ---
+    if (!campusId) {
+      message.warning('Please select your school or university from the search results.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await registerUser(values);
-      
+      const response = await registerUser({
+        ...values,
+        campusId,
+        campusName,
+      });
+
       // If email confirmation is disabled, Supabase returns a session immediately
       if (response?.session) {
         message.success('Account created successfully! Welcome to CampusShop 🎉');
@@ -95,12 +108,37 @@ const SignupPage = () => {
           requiredMark={false}
           className="auth-form"
         >
+          {/* ---- Campus Selection (Mandatory) ---- */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 8 }}>
+              <Text strong style={{ fontSize: 14, color: 'var(--text-primary)' }}>
+                <Building2 size={16} style={{ marginRight: 6, color: '#0062ff' }} />
+                Your School or University
+              </Text>
+              <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
+                (Required)
+              </Text>
+            </div>
+            <CampusSearch
+              value={campusId}
+              onChange={(id, name) => {
+                setCampusId(id);
+                setCampusName(name || '');
+              }}
+            />
+            <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 6 }}>
+              Select your institution from the list. Type at least 2 characters to search.
+            </Text>
+          </div>
+
+          <Divider style={{ margin: '0 0 20px', borderColor: 'var(--border-color)' }} />
+
           <Form.Item
             name="name"
             rules={[{ required: true, message: 'Please enter your full name' }]}
           >
             <Input
-              prefix={<UserOutlined />}
+              prefix={<User size={16} />}
               placeholder="e.g. Alex Johnson"
               autoComplete="name"
             />
@@ -114,8 +152,8 @@ const SignupPage = () => {
             ]}
           >
             <Input
-              prefix={<MailOutlined />}
-              placeholder="e.g. alex@student.edu"
+              prefix={<Mail size={16} />}
+              placeholder="e.g. alex@email.com"
               autoComplete="email"
             />
           </Form.Item>
@@ -124,7 +162,7 @@ const SignupPage = () => {
             name="phone"
           >
             <Input
-              prefix={<PhoneOutlined />}
+              prefix={<Phone size={16} />}
               placeholder="Phone Number e.g. +234... (for WhatsApp)"
               autoComplete="tel"
             />
@@ -134,12 +172,34 @@ const SignupPage = () => {
             name="password"
             rules={[
               { required: true, message: 'Please create a password' },
-              { min: 6, message: 'Password must be at least 6 characters' },
+              { min: 8, message: 'Password must be at least 8 characters' },
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Create a password (min. 6 characters)"
+              prefix={<Lock size={16} />}
+              placeholder="Create a password (min. 8 characters)"
+              autoComplete="new-password"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: 'Please confirm your password' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Passwords do not match!'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<Lock size={16} />}
+              placeholder="Confirm your password"
               autoComplete="new-password"
             />
           </Form.Item>

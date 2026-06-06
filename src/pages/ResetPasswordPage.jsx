@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message } from 'antd';
-import { LockOutlined } from '@ant-design/icons';
+import { Lock } from 'lucide-react';
 import { updatePassword } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -50,12 +50,12 @@ const ResetPasswordPage = () => {
             name="password"
             rules={[
               { required: true, message: 'Please enter your new password' },
-              { min: 6, message: 'Password must be at least 6 characters' },
+              { min: 8, message: 'Password must be at least 8 characters' },
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Enter new password (min. 6 characters)"
+              prefix={<Lock size={16} />}
+              placeholder="Enter new password (min. 8 characters)"
               autoComplete="new-password"
             />
           </Form.Item>
@@ -76,7 +76,7 @@ const ResetPasswordPage = () => {
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
+              prefix={<Lock size={16} />}
               placeholder="Confirm new password"
               autoComplete="new-password"
             />

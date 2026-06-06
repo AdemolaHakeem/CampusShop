@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag, Badge } from 'antd';
-import { SearchOutlined, FilterOutlined, ShopOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag } from 'antd';
+import { Search, Filter, LayoutGrid } from 'lucide-react';
 import { useListings } from '../hooks/useListings';
 import ListingCard from '../components/ListingCard';
 import { CATEGORIES, CATEGORY_COLORS } from '../utils/categories';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const MarketplacePage = () => {
   const { listings, loading } = useListings();
@@ -43,7 +43,7 @@ const MarketplacePage = () => {
       <div className="marketplace-hero">
         <div className="marketplace-hero-content">
           <Space align="center" size={12}>
-            <AppstoreOutlined style={{ fontSize: 32, color: '#0062ff' }} />
+            <LayoutGrid size={32} color="#0062ff" />
             <div>
               <Title level={2} style={{ margin: 0 }}>
                 Campus Marketplace
@@ -62,7 +62,7 @@ const MarketplacePage = () => {
           <Col xs={24} sm={24} md={14} lg={16}>
             <Input
               placeholder="Search for items..."
-              prefix={<SearchOutlined style={{ color: '#0062ff' }} />}
+              prefix={<Search size={16} color="#0062ff" />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               allowClear
@@ -76,7 +76,7 @@ const MarketplacePage = () => {
               onChange={setCategory}
               size="large"
               style={{ width: '100%' }}
-              suffixIcon={<FilterOutlined />}
+              suffixIcon={<Filter size={14} />}
               className="filter-select"
               options={[
                 { value: 'all', label: `All Categories (${categoryCounts.all || 0})` },

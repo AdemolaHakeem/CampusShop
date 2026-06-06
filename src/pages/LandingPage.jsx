@@ -1,17 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Typography, Row, Col, Space, Card } from 'antd';
 import {
-  SafetyOutlined,
-  ThunderboltOutlined,
-  TeamOutlined,
-  WhatsAppOutlined,
-  SearchOutlined,
-  PlusCircleOutlined,
-  ArrowRightOutlined,
-  CheckCircleOutlined,
-  StarFilled,
-  RocketOutlined,
-} from '@ant-design/icons';
+  Shield,
+  Zap,
+  Users,
+  MessageCircle,
+  Search,
+  PlusCircle,
+  ArrowRight,
+  CheckCircle,
+  Star,
+  Rocket,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -19,37 +19,37 @@ const { Title, Text, Paragraph } = Typography;
 
 const features = [
   {
-    icon: <SafetyOutlined />,
+    icon: <Shield size={24} />,
     title: 'Students Only',
     desc: 'A trusted community exclusive to verified university students. Trade with confidence.',
     color: '#0062ff',
   },
   {
-    icon: <ThunderboltOutlined />,
+    icon: <Zap size={24} />,
     title: 'Instant Listings',
     desc: 'Post items in under 30 seconds. Your listing goes live immediately for everyone to see.',
     color: '#f093fb',
   },
   {
-    icon: <WhatsAppOutlined />,
+    icon: <MessageCircle size={24} />,
     title: 'WhatsApp Connect',
     desc: 'Contact sellers directly via WhatsApp. No in-app messaging hassle, just real conversations.',
     color: '#25D366',
   },
   {
-    icon: <SearchOutlined />,
+    icon: <Search size={24} />,
     title: 'Smart Search',
     desc: 'Find exactly what you need with powerful search and category filtering.',
     color: '#ffd700',
   },
   {
-    icon: <TeamOutlined />,
+    icon: <Users size={24} />,
     title: 'Campus Community',
     desc: 'Buy and sell within your campus. Meet locally, trade safely, build connections.',
     color: '#13c2c2',
   },
   {
-    icon: <RocketOutlined />,
+    icon: <Rocket size={24} />,
     title: 'Real-Time Sync',
     desc: 'Listings update in real-time across all devices. Never miss a great deal.',
     color: '#fa8c16',
@@ -61,19 +61,19 @@ const steps = [
     num: '01',
     title: 'Create Your Account',
     desc: 'Sign up in seconds with your email. Join the campus marketplace community.',
-    icon: <PlusCircleOutlined />,
+    icon: <PlusCircle size={28} />,
   },
   {
     num: '02',
     title: 'Post or Browse',
     desc: 'List items you want to sell or browse what others are offering on campus.',
-    icon: <SearchOutlined />,
+    icon: <Search size={28} />,
   },
   {
     num: '03',
     title: 'Connect & Trade',
     desc: 'Contact sellers via WhatsApp, meet on campus, and complete your trade.',
-    icon: <WhatsAppOutlined />,
+    icon: <MessageCircle size={28} />,
   },
 ];
 
@@ -139,7 +139,7 @@ const LandingPage = () => {
 
         <div className="hero-content">
           <div className="hero-badge">
-            <StarFilled style={{ color: '#ffd700', marginRight: 6 }} />
+            <Star size={14} color="#ffd700" style={{ marginRight: 6 }} />
             <span>The #1 Campus Marketplace for Students</span>
           </div>
 
@@ -158,7 +158,7 @@ const LandingPage = () => {
             <Button
               type="primary"
               size="large"
-              icon={<ArrowRightOutlined />}
+              icon={<ArrowRight size={16} />}
               onClick={() => navigate('/signup')}
               className="hero-btn-primary"
             >
@@ -322,7 +322,7 @@ const LandingPage = () => {
               <div className="testimonial-card">
                 <div className="testimonial-stars">
                   {[...Array(5)].map((_, j) => (
-                    <StarFilled key={j} style={{ color: '#ffd700', fontSize: 14 }} />
+                    <Star key={j} size={14} color="#ffd700" fill="#ffd700" />
                   ))}
                 </div>
                 <Paragraph style={{ fontSize: 14, lineHeight: 1.7, marginBottom: 16 }}>
@@ -367,7 +367,7 @@ const LandingPage = () => {
             ].map((item, i) => (
               <Col key={i} xs={12} sm={8}>
                 <Space size={8} align="center">
-                  <CheckCircleOutlined style={{ color: '#52c41a', fontSize: 16 }} />
+                  <CheckCircle size={16} color="#52c41a" />
                   <Text style={{ fontSize: 14 }}>{item}</Text>
                 </Space>
               </Col>
@@ -378,7 +378,7 @@ const LandingPage = () => {
             <Button
               type="primary"
               size="large"
-              icon={<ArrowRightOutlined />}
+              icon={<ArrowRight size={16} />}
               onClick={() => navigate('/signup')}
               className="hero-btn-primary"
             >

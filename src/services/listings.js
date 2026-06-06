@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { withCampusScope } from './campusFilter';
 
 export const mapListing = (dbListing) => {
   if (!dbListing) return null;
@@ -12,6 +13,7 @@ export const mapListing = (dbListing) => {
     sellerId: dbListing.seller_id,
     sellerName: dbListing.seller_name,
     sellerPhone: dbListing.whatsapp_number,
+    campusId: dbListing.campus_id,
     createdAt: dbListing.created_at,
   };
 };
@@ -58,11 +60,12 @@ export const addListing = async (data) => {
         seller_id: data.sellerId,
         seller_name: data.sellerName,
         whatsapp_number: data.sellerPhone || '',
+        campus_id: data.campusId || null,
       }
     ])
     .select()
     .single();
-  
+
   if (error) throw error;
   return mapListing(insertedData);
 };
@@ -72,17 +75,29 @@ export const deleteListing = async (id) => {
     .from('listings')
     .delete()
     .eq('id', id);
-  
+
   if (error) throw error;
 };
 
-export const subscribeToAllListings = (callback) => {
+/**
+ * Subscribe to listings scoped to the user's campus (or global).
+ * Listings where campus_id IS NULL (global feed) are always included.
+ *
+ * @param {string|null} campusId - the user's campus_id
+ * @param {function} callback - receives the mapped listings array
+ * @returns {function} unsubscribe
+ */
+export const subscribeToAllListings = (campusId, callback) => {
   const fetchAndCallback = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
         .select('*')
         .order('created_at', { ascending: false });
+
+      query = withCampusScope(query, campusId);
+
+      const { data, error } = await query;
       if (error) throw error;
       callback(data.map(mapListing));
     } catch (err) {
@@ -110,16 +125,28 @@ export const subscribeToAllListings = (callback) => {
   };
 };
 
-export const subscribeToUserListings = (userId, callback) => {
+/**
+ * Subscribe to a specific user's listings (scoped to campus for consistency).
+ *
+ * @param {string} userId
+ * @param {string|null} campusId
+ * @param {function} callback
+ * @returns {function} unsubscribe
+ */
+export const subscribeToUserListings = (userId, campusId, callback) => {
   if (!userId) return () => {};
 
   const fetchAndCallback = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('listings')
         .select('*')
         .eq('seller_id', userId)
         .order('created_at', { ascending: false });
+
+      query = withCampusScope(query, campusId);
+
+      const { data, error } = await query;
       if (error) throw error;
       callback(data.map(mapListing));
     } catch (err) {

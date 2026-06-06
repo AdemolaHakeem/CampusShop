@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
       email: user.email,
       displayName: user.user_metadata?.name || '',
       phone: user.user_metadata?.phone || '',
+      campusId: user.user_metadata?.campus_id || null,
+      campusName: user.user_metadata?.campus_name || null,
     };
   };
 

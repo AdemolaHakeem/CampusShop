@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal } from 'antd';
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import { Mail, Lock } from 'lucide-react';
 import { loginUser, resendVerification, resetPassword } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -83,8 +83,8 @@ const LoginPage = () => {
             ]}
           >
             <Input
-              prefix={<MailOutlined />}
-              placeholder="Enter your school email"
+              prefix={<Mail size={16} />}
+              placeholder="Enter your email"
               autoComplete="email"
             />
           </Form.Item>
@@ -95,7 +95,7 @@ const LoginPage = () => {
             style={{ marginBottom: 12 }}
           >
             <Input.Password
-              prefix={<LockOutlined />}
+              prefix={<Lock size={16} />}
               placeholder="Enter your password"
               autoComplete="current-password"
             />
@@ -145,7 +145,7 @@ const LoginPage = () => {
       >
         <div style={{ marginTop: 16 }}>
           <Paragraph type="secondary" style={{ marginBottom: 24 }}>
-            Enter your school email below. We'll send you a secure link to reset your password.
+            Enter your email below. We'll send you a secure link to reset your password.
           </Paragraph>
           
           <Form
@@ -176,8 +176,8 @@ const LoginPage = () => {
               ]}
             >
               <Input 
-                prefix={<MailOutlined />} 
-                placeholder="Enter your school email" 
+                prefix={<Mail size={16} />} 
+                placeholder="Enter your email" 
                 autoComplete="email"
               />
             </Form.Item>

@@ -1,13 +1,13 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Layout, Menu, Button, Typography, Avatar, Dropdown, Space, Grid } from 'antd';
+import { Layout, Menu, Typography, Avatar, Dropdown, Space, Grid } from 'antd';
 import {
-  ShopOutlined,
-  PlusCircleOutlined,
-  UnorderedListOutlined,
-  LogoutOutlined,
-  UserOutlined,
-  MenuOutlined,
-} from '@ant-design/icons';
+  Store,
+  PlusCircle,
+  List,
+  LogOut,
+  User,
+  Menu as MenuIcon,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { logoutUser } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
@@ -15,6 +15,8 @@ import logoIcon from '../assets/CampusShop2.0.png';
 const { Header } = Layout;
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
+
+const iconStyle = { fontSize: 16, display: 'inline-flex', alignItems: 'center' };
 
 const Navbar = () => {
   const { currentUser } = useAuth();
@@ -32,17 +34,17 @@ const Navbar = () => {
   const menuItems = [
     {
       key: '/market',
-      icon: <ShopOutlined />,
+      icon: <Store size={16} />,
       label: 'Marketplace',
     },
     {
       key: '/add-listing',
-      icon: <PlusCircleOutlined />,
+      icon: <PlusCircle size={16} />,
       label: 'Sell Item',
     },
     {
       key: '/my-listings',
-      icon: <UnorderedListOutlined />,
+      icon: <List size={16} />,
       label: 'My Listings',
     },
   ];
@@ -61,7 +63,7 @@ const Navbar = () => {
     { type: 'divider' },
     {
       key: 'logout',
-      icon: <LogoutOutlined />,
+      icon: <LogOut size={14} />,
       label: 'Sign Out',
       danger: true,
       onClick: handleLogout,
@@ -98,7 +100,7 @@ const Navbar = () => {
         <div className="navbar-avatar">
           <Avatar
             size={36}
-            icon={<UserOutlined />}
+            icon={<User size={18} />}
             style={{ background: 'linear-gradient(135deg, #0062ff 0%, #0fb659 100%)', cursor: 'pointer' }}
           />
         </div>
