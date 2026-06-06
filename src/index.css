@@ -787,7 +787,7 @@ body::before {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 100px 32px 60px;
+  padding: 60px 32px 60px;
   overflow: hidden;
 }
 
@@ -1026,6 +1026,7 @@ body::before {
   height: 100px;
   border-radius: 10px;
   margin-bottom: 10px;
+  object-fit: cover;
 }
 
 .floating-card-info {

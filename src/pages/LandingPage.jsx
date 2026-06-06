@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoIcon from '../assets/CampusShop2.0.png';
+import macbookImg from '../assets/MACBOOK.jpg';
+import textbookImg from '../assets/TEXTBOOK.jpg';
+import deskImg from '../assets/DESK.jpg';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -191,21 +194,21 @@ const LandingPage = () => {
         {/* Floating cards decoration */}
         <div className="hero-floating-cards">
           <div className="floating-card floating-card-1">
-            <div className="floating-card-img" style={{ background: 'linear-gradient(135deg, #0062ff, #0fb659)' }} />
+            <img className="floating-card-img" src={macbookImg} alt="MacBook Pro M3" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>MacBook Pro M3</Text>
               <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦450,000</Text>
             </div>
           </div>
           <div className="floating-card floating-card-2">
-            <div className="floating-card-img" style={{ background: 'linear-gradient(135deg, #f093fb, #f5576c)' }} />
+            <img className="floating-card-img" src={textbookImg} alt="Textbook Bundle" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>Textbook Bundle</Text>
               <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦8,500</Text>
             </div>
           </div>
           <div className="floating-card floating-card-3">
-            <div className="floating-card-img" style={{ background: 'linear-gradient(135deg, #13c2c2, #00b09b)' }} />
+            <img className="floating-card-img" src={deskImg} alt="Study Desk" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>Study Desk</Text>
               <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦15,000</Text>
