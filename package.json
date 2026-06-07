@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed": "node scripts/seed-campuses.js"
+    "seed": "node scripts/seed-campuses.js",
+    "start": "serve -s dist -l $PORT"
+    
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
