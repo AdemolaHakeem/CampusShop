@@ -25,7 +25,7 @@ export const uploadListingImage = async (file) => {
   const filePath = `listing-images/${fileName}`;
 
   // Upload file to 'listings' bucket
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('listings')
     .upload(filePath, file, {
       cacheControl: '3600',
@@ -80,20 +80,26 @@ export const deleteListing = async (id) => {
 };
 
 /**
- * Subscribe to listings scoped to the user's campus (or global).
- * Listings where campus_id IS NULL (global feed) are always included.
+ * Creates a real-time subscription to listings from Supabase.
  *
- * @param {string|null} campusId - the user's campus_id
- * @param {function} callback - receives the mapped listings array
+ * @param {object} options
+ * @param {string|null} options.campusId - scope listings to this campus
+ * @param {string|null} [options.userId] - if provided, filter by seller_id
+ * @param {string} options.channelName - unique channel identifier
+ * @param {function} options.callback - receives the mapped listings array
  * @returns {function} unsubscribe
  */
-export const subscribeToAllListings = (campusId, callback) => {
+const createListingSubscription = ({ campusId, userId, channelName, callback }) => {
   const fetchAndCallback = async () => {
     try {
       let query = supabase
         .from('listings')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (userId) {
+        query = query.eq('seller_id', userId);
+      }
 
       query = withCampusScope(query, campusId);
 
@@ -105,24 +111,39 @@ export const subscribeToAllListings = (campusId, callback) => {
     }
   };
 
-  // Fetch initial data
   fetchAndCallback();
 
-  // Subscribe to changes
+  const subscriptionFilter = userId
+    ? { event: '*', schema: 'public', table: 'listings', filter: `seller_id=eq.${userId}` }
+    : { event: '*', schema: 'public', table: 'listings' };
+
   const channel = supabase
-    .channel('public:listings:all')
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'listings' },
-      () => {
-        fetchAndCallback();
-      }
-    )
+    .channel(channelName)
+    .on('postgres_changes', subscriptionFilter, () => {
+      fetchAndCallback();
+    })
     .subscribe();
 
   return () => {
     supabase.removeChannel(channel);
   };
+};
+
+/**
+ * Subscribe to listings scoped to the user's campus (or global).
+ * Listings where campus_id IS NULL (global feed) are always included.
+ *
+ * @param {string|null} campusId - the user's campus_id
+ * @param {function} callback - receives the mapped listings array
+ * @returns {function} unsubscribe
+ */
+export const subscribeToAllListings = (campusId, callback) => {
+  return createListingSubscription({
+    campusId,
+    userId: null,
+    channelName: 'public:listings:all',
+    callback,
+  });
 };
 
 /**
@@ -136,45 +157,10 @@ export const subscribeToAllListings = (campusId, callback) => {
 export const subscribeToUserListings = (userId, campusId, callback) => {
   if (!userId) return () => {};
 
-  const fetchAndCallback = async () => {
-    try {
-      let query = supabase
-        .from('listings')
-        .select('*')
-        .eq('seller_id', userId)
-        .order('created_at', { ascending: false });
-
-      query = withCampusScope(query, campusId);
-
-      const { data, error } = await query;
-      if (error) throw error;
-      callback(data.map(mapListing));
-    } catch (err) {
-      console.error('Error fetching user listings:', err);
-    }
-  };
-
-  // Fetch initial data
-  fetchAndCallback();
-
-  // Subscribe to changes
-  const channel = supabase
-    .channel(`public:listings:user:${userId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'listings',
-        filter: `seller_id=eq.${userId}`,
-      },
-      () => {
-        fetchAndCallback();
-      }
-    )
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
+  return createListingSubscription({
+    campusId,
+    userId,
+    channelName: `public:listings:user:${userId}`,
+    callback,
+  });
 };

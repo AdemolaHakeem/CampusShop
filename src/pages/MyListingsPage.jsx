@@ -1,10 +1,12 @@
-import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button } from 'antd';
+import { Typography, Row, Col, Modal, message } from 'antd';
 import { List, AlertCircle, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserListings } from '../hooks/useListings';
 import { deleteListing } from '../services/listings';
 import ListingCard from '../components/ListingCard';
+import FullPageSpinner from '../components/FullPageSpinner';
+import EmptyState from '../components/EmptyState';
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
@@ -36,17 +38,13 @@ const MyListingsPage = () => {
   };
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <Spin size="large" tip="Loading your listings..." />
-      </div>
-    );
+    return <FullPageSpinner tip="Loading your listings..." />;
   }
 
   return (
     <div className="my-listings-page">
       <div className="page-header">
-        <Space align="center" size={12}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <List size={28} color="#0062ff" />
           <div>
             <Title level={2} style={{ margin: 0 }}>My Listings</Title>
@@ -54,25 +52,17 @@ const MyListingsPage = () => {
               {listings.length} item{listings.length !== 1 ? 's' : ''} posted
             </Text>
           </div>
-        </Space>
+        </div>
       </div>
 
       {listings.length === 0 ? (
-        <div className="empty-state">
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <Space direction="vertical" size={4}>
-                <Text strong style={{ fontSize: 16 }}>You haven't posted anything yet</Text>
-                <Text type="secondary">Start selling by creating your first listing</Text>
-              </Space>
-            }
-          >
-            <Button type="primary" icon={<Plus size={16} />} onClick={() => navigate('/add-listing')}>
-              Create Listing
-            </Button>
-          </Empty>
-        </div>
+        <EmptyState
+          title="You haven't posted anything yet"
+          description="Start selling by creating your first listing"
+          actionLabel="Create Listing"
+          actionIcon={<Plus size={16} />}
+          onAction={() => navigate('/add-listing')}
+        />
       ) : (
         <Row gutter={[20, 20]} className="listings-grid">
           {listings.map((listing) => (
