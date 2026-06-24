@@ -117,8 +117,7 @@ export const getUserProfile = async (userId) => {
     .single();
 
   if (error) {
-    console.error('Error fetching user profile:', error);
-    return null;
+    throw error;
   }
 
   return data;

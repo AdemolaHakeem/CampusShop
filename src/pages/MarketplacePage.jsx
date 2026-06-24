@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag, Statistic, Button } from 'antd';
+import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag, Statistic, Button, Alert } from 'antd';
 import { Search, Filter, LayoutGrid, PlusCircle, Tag as TagIcon, TrendingUp, Store } from 'lucide-react';
 import { useListings } from '../hooks/useListings';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const { Title, Text } = Typography;
 
 const MarketplacePage = () => {
-  const { listings, loading } = useListings();
+  const { listings, loading, error } = useListings();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -44,6 +44,24 @@ const MarketplacePage = () => {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Spin size="large" tip="Loading marketplace..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', padding: 24 }}>
+        <Alert
+          type="error"
+          showIcon
+          message="Failed to load listings"
+          description={error.message || 'Something went wrong. Please try refreshing the page.'}
+          action={
+            <Button size="small" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          }
+        />
       </div>
     );
   }
