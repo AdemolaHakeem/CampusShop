@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal } from 'antd';
 import { Mail, Lock } from 'lucide-react';
 import { loginUser, resendVerification, resetPassword } from '../services/auth';
+import logger from '../utils/logger';
 import logoIcon from '../assets/CampusShop2.0.png';
 
 const { Title, Text, Paragraph } = Typography;
@@ -21,7 +22,7 @@ const LoginPage = () => {
       message.success('Welcome back! 👋');
       navigate('/market');
     } catch (err) {
-      console.error('Login error:', err);
+      logger.error('Login error:', err);
       if (err.message?.toLowerCase().includes('email not confirmed')) {
         Modal.warning({
           title: 'Email Verification Required ✉️',
@@ -41,7 +42,7 @@ const LoginPage = () => {
               await resendVerification(values.email);
               message.success({ content: 'Verification email resent! Check your inbox ✉️', key: 'resend', duration: 4 });
             } catch (resendErr) {
-              console.error('Resend error:', resendErr);
+              logger.error('Resend error:', resendErr);
               message.error({ content: resendErr.message || 'Failed to resend verification email.', key: 'resend' });
             }
           }
@@ -160,7 +161,7 @@ const LoginPage = () => {
                 setForgotPasswordVisible(false);
                 resetForm.resetFields();
               } catch (err) {
-                console.error('Reset password error:', err);
+                logger.error('Reset password error:', err);
                 message.error(err.message || 'Failed to send reset link. Please try again.');
               } finally {
                 setResetLoading(false);

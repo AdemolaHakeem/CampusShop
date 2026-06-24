@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import CAMPUSES from '../data/campuses.js';
+import logger from '../utils/logger';
 
 /**
  * Local fallback: search the bundled campus data directly.
@@ -53,10 +54,10 @@ export const searchCampuses = async (query, limit = 15) => {
     if (data && data.length > 0) return data;
 
     // No results or error — fall back to local data
-    console.warn('Supabase campuses query returned no results, using local fallback');
+    logger.warn('Supabase campuses query returned no results, using local fallback');
     return localSearch(query, limit);
   } catch (err) {
-    console.warn('Supabase campuses query failed, using local fallback:', err.message);
+    logger.warn('Supabase campuses query failed, using local fallback:', err.message);
     return localSearch(query, limit);
   }
 };
@@ -81,7 +82,7 @@ export const getCampusById = async (id) => {
     if (error) throw error;
     return data;
   } catch (err) {
-    console.warn('Supabase getCampusById failed, using local fallback:', err.message);
+    logger.warn('Supabase getCampusById failed, using local fallback:', err.message);
     const found = CAMPUSES.find((u) => u.name === id);
     if (!found) return null;
     let domain = null;
@@ -117,7 +118,7 @@ export const getUserProfile = async (userId) => {
     .single();
 
   if (error) {
-    console.error('Error fetching user profile:', error);
+    logger.error('Error fetching user profile:', error);
     return null;
   }
 
