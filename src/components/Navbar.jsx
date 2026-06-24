@@ -1,5 +1,5 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Layout, Menu, Typography, Avatar, Dropdown, Space, Grid } from 'antd';
+import { Layout, Menu, Typography, Avatar, Dropdown, Space, Grid, message } from 'antd';
 import {
   Store,
   PlusCircle,
@@ -25,8 +25,13 @@ const Navbar = () => {
   const screens = useBreakpoint();
 
   const handleLogout = async () => {
-    await logoutUser();
-    navigate('/login');
+    try {
+      await logoutUser();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
+      message.error('Failed to sign out. Please try again.');
+    }
   };
 
   if (!currentUser) return null;

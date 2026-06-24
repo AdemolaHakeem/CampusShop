@@ -87,7 +87,7 @@ export const deleteListing = async (id) => {
  * @param {function} callback - receives the mapped listings array
  * @returns {function} unsubscribe
  */
-export const subscribeToAllListings = (campusId, callback) => {
+export const subscribeToAllListings = (campusId, callback, onError) => {
   const fetchAndCallback = async () => {
     try {
       let query = supabase
@@ -102,6 +102,7 @@ export const subscribeToAllListings = (campusId, callback) => {
       callback(data.map(mapListing));
     } catch (err) {
       console.error('Error fetching listings:', err);
+      if (onError) onError(err);
     }
   };
 
@@ -133,7 +134,7 @@ export const subscribeToAllListings = (campusId, callback) => {
  * @param {function} callback
  * @returns {function} unsubscribe
  */
-export const subscribeToUserListings = (userId, campusId, callback) => {
+export const subscribeToUserListings = (userId, campusId, callback, onError) => {
   if (!userId) return () => {};
 
   const fetchAndCallback = async () => {
@@ -151,6 +152,7 @@ export const subscribeToUserListings = (userId, campusId, callback) => {
       callback(data.map(mapListing));
     } catch (err) {
       console.error('Error fetching user listings:', err);
+      if (onError) onError(err);
     }
   };
 

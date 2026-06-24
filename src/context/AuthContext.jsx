@@ -25,6 +25,10 @@ export const AuthProvider = ({ children }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(formatUser(session?.user || null));
       setLoading(false);
+    }).catch((err) => {
+      console.error('Failed to get auth session:', err);
+      setCurrentUser(null);
+      setLoading(false);
     });
 
     // 2. Subscribe to auth changes

@@ -1,4 +1,4 @@
-import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button } from 'antd';
+import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button, Alert } from 'antd';
 import { List, AlertCircle, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -11,7 +11,7 @@ const { confirm } = Modal;
 
 const MyListingsPage = () => {
   const { currentUser } = useAuth();
-  const { listings, loading } = useUserListings(currentUser?.uid);
+  const { listings, loading, error } = useUserListings(currentUser?.uid);
   const navigate = useNavigate();
 
   const handleDelete = (id) => {
@@ -39,6 +39,24 @@ const MyListingsPage = () => {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Spin size="large" tip="Loading your listings..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', padding: 24 }}>
+        <Alert
+          type="error"
+          showIcon
+          message="Failed to load your listings"
+          description={error.message || 'Something went wrong. Please try refreshing the page.'}
+          action={
+            <Button size="small" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          }
+        />
       </div>
     );
   }
