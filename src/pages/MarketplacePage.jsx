@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag, Statistic, Button } from 'antd';
-import { Search, Filter, LayoutGrid, PlusCircle, Tag as TagIcon, TrendingUp, Store } from 'lucide-react';
+import { Input, Select, Row, Col, Typography, Space, Tag, Statistic, Button } from 'antd';
+import { Search, Filter, PlusCircle, Tag as TagIcon, TrendingUp, Store } from 'lucide-react';
 import { useListings } from '../hooks/useListings';
 import { useAuth } from '../context/AuthContext';
 import ListingCard from '../components/ListingCard';
+import FullPageSpinner from '../components/FullPageSpinner';
+import EmptyState from '../components/EmptyState';
 import { CATEGORIES, CATEGORY_COLORS } from '../utils/categories';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,11 +43,7 @@ const MarketplacePage = () => {
   }, [categoryCounts]);
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <Spin size="large" tip="Loading marketplace..." />
-      </div>
-    );
+    return <FullPageSpinner tip="Loading marketplace..." />;
   }
 
   return (
@@ -202,33 +200,15 @@ const MarketplacePage = () => {
 
       {/* Listings Grid */}
       {filtered.length === 0 ? (
-        <div className="empty-state">
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <Space direction="vertical" size={4}>
-                <Text strong style={{ fontSize: 16 }}>No listings found</Text>
-                <Text type="secondary">
-                  {search || category !== 'all'
-                    ? 'Try adjusting your search or filters'
-                    : 'Be the first to post something!'}
-                </Text>
-              </Space>
-            }
-          >
-            {!search && category === 'all' && (
-              <Button
-                type="primary"
-                icon={<PlusCircle size={16} />}
-                onClick={() => navigate('/add-listing')}
-                className="hero-btn-primary"
-                style={{ marginTop: 8 }}
-              >
-                Create First Listing
-              </Button>
-            )}
-          </Empty>
-        </div>
+        <EmptyState
+          title="No listings found"
+          description={search || category !== 'all'
+            ? 'Try adjusting your search or filters'
+            : 'Be the first to post something!'}
+          actionLabel={!search && category === 'all' ? 'Create First Listing' : undefined}
+          actionIcon={!search && category === 'all' ? <PlusCircle size={16} /> : undefined}
+          onAction={!search && category === 'all' ? () => navigate('/add-listing') : undefined}
+        />
       ) : (
         <Row gutter={[20, 20]} className="listings-grid">
           {filtered.map((listing) => (

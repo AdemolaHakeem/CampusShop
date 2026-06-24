@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal } from 'antd';
 import { Mail, Lock } from 'lucide-react';
-import { loginUser, resendVerification, resetPassword } from '../services/auth';
-import logoIcon from '../assets/CampusShop2.0.png';
+import { loginUser, resetPassword } from '../services/auth';
+import { handleResendVerification } from '../utils/resendVerification';
+import { emailRules } from '../utils/formRules';
+import AuthPageLayout from '../components/AuthPageLayout';
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -18,17 +20,17 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await loginUser(values);
-      message.success('Welcome back! 👋');
+      message.success('Welcome back!');
       navigate('/market');
     } catch (err) {
       console.error('Login error:', err);
       if (err.message?.toLowerCase().includes('email not confirmed')) {
         Modal.warning({
-          title: 'Email Verification Required ✉️',
+          title: 'Email Verification Required',
           content: (
             <div style={{ marginTop: 12 }}>
               <p>Your email has not been confirmed yet. Please verify your email to log in.</p>
-              <p>Didn't receive the email, or has the link expired?</p>
+              <p>Didn&apos;t receive the email, or has the link expired?</p>
             </div>
           ),
           okText: 'Resend Verification Link',
@@ -36,14 +38,7 @@ const LoginPage = () => {
           okCancel: true,
           centered: true,
           async onOk() {
-            try {
-              message.loading({ content: 'Resending verification email...', key: 'resend' });
-              await resendVerification(values.email);
-              message.success({ content: 'Verification email resent! Check your inbox ✉️', key: 'resend', duration: 4 });
-            } catch (resendErr) {
-              console.error('Resend error:', resendErr);
-              message.error({ content: resendErr.message || 'Failed to resend verification email.', key: 'resend' });
-            }
+            await handleResendVerification(values.email);
           }
         });
       } else {
@@ -55,85 +50,72 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 60, width: 60, objectFit: 'contain' }} />
-          </div>
-          <Title level={2} style={{ margin: 0 }}>Welcome Back</Title>
-          <Paragraph type="secondary" style={{ margin: 0 }}>
-            Sign in to your CampusShop account
-          </Paragraph>
-        </div>
-
-        <Form
-          name="login"
-          layout="vertical"
-          onFinish={onFinish}
-          size="large"
-          requiredMark={false}
-          className="auth-form"
+    <AuthPageLayout
+      title="Welcome Back"
+      subtitle="Sign in to your CampusShop account"
+      footer={
+        <Text type="secondary">
+          Don&apos;t have an account?{' '}
+          <Link to="/signup" className="auth-link">Create one</Link>
+        </Text>
+      }
+    >
+      <Form
+        name="login"
+        layout="vertical"
+        onFinish={onFinish}
+        size="large"
+        requiredMark={false}
+        className="auth-form"
+      >
+        <Form.Item
+          name="email"
+          rules={emailRules}
         >
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' },
-            ]}
+          <Input
+            prefix={<Mail size={16} />}
+            placeholder="Enter your email"
+            autoComplete="email"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please enter your password' }]}
+          style={{ marginBottom: 12 }}
+        >
+          <Input.Password
+            prefix={<Lock size={16} />}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+          />
+        </Form.Item>
+
+        <div style={{ textAlign: 'right', marginBottom: 24 }}>
+          <a
+            onClick={() => setForgotPasswordVisible(true)}
+            className="auth-link"
+            style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
           >
-            <Input
-              prefix={<Mail size={16} />}
-              placeholder="Enter your email"
-              autoComplete="email"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: 'Please enter your password' }]}
-            style={{ marginBottom: 12 }}
-          >
-            <Input.Password
-              prefix={<Lock size={16} />}
-              placeholder="Enter your password"
-              autoComplete="current-password"
-            />
-          </Form.Item>
-
-          <div style={{ textAlign: 'right', marginBottom: 24 }}>
-            <a
-              onClick={() => setForgotPasswordVisible(true)}
-              className="auth-link"
-              style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-            >
-              Forgot Password?
-            </a>
-          </div>
-
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              className="auth-btn"
-            >
-              Sign In
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <div className="auth-footer">
-          <Text type="secondary">
-            Don&apos;t have an account?{' '}
-            <Link to="/signup" className="auth-link">Create one</Link>
-          </Text>
+            Forgot Password?
+          </a>
         </div>
-      </div>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            block
+            className="auth-btn"
+          >
+            Sign In
+          </Button>
+        </Form.Item>
+      </Form>
 
       <Modal
-        title="Reset Password 🔒"
+        title="Reset Password"
         open={forgotPasswordVisible}
         onCancel={() => {
           setForgotPasswordVisible(false);
@@ -145,7 +127,7 @@ const LoginPage = () => {
       >
         <div style={{ marginTop: 16 }}>
           <Paragraph type="secondary" style={{ marginBottom: 24 }}>
-            Enter your email below. We'll send you a secure link to reset your password.
+            Enter your email below. We&apos;ll send you a secure link to reset your password.
           </Paragraph>
           
           <Form
@@ -156,7 +138,7 @@ const LoginPage = () => {
               setResetLoading(true);
               try {
                 await resetPassword(values.email);
-                message.success('Password reset link sent! Check your email inbox ✉️');
+                message.success('Password reset link sent! Check your email inbox.');
                 setForgotPasswordVisible(false);
                 resetForm.resetFields();
               } catch (err) {
@@ -170,10 +152,7 @@ const LoginPage = () => {
           >
             <Form.Item
               name="email"
-              rules={[
-                { required: true, message: 'Please enter your email' },
-                { type: 'email', message: 'Please enter a valid email' },
-              ]}
+              rules={emailRules}
             >
               <Input 
                 prefix={<Mail size={16} />} 
@@ -197,7 +176,7 @@ const LoginPage = () => {
           </Form>
         </div>
       </Modal>
-    </div>
+    </AuthPageLayout>
   );
 };
 
