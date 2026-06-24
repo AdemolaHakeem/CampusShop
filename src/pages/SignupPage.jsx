@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal, Divider } from 'antd';
 import { Mail, Lock, User, Phone, Building2 } from 'lucide-react';
 import { registerUser, resendVerification } from '../services/auth';
+import logger from '../utils/logger';
 import CampusSearch from '../components/CampusSearch';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -51,7 +52,7 @@ const SignupPage = () => {
         });
       }
     } catch (err) {
-      console.error('Registration error:', err);
+      logger.error('Registration error:', err);
       if (err.message?.toLowerCase().includes('user already registered')) {
         Modal.info({
           title: 'Account Already Exists 👤',
@@ -71,7 +72,7 @@ const SignupPage = () => {
               await resendVerification(values.email);
               message.success({ content: 'Verification email resent! Check your inbox ✉️', key: 'resend', duration: 4 });
             } catch (resendErr) {
-              console.error('Resend error:', resendErr);
+              logger.error('Resend error:', resendErr);
               message.error({ content: resendErr.message || 'Failed to resend verification email.', key: 'resend' });
             }
           },

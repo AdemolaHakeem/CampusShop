@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserListings } from '../hooks/useListings';
 import { deleteListing } from '../services/listings';
+import logger from '../utils/logger';
 import ListingCard from '../components/ListingCard';
 
 const { Title, Text } = Typography;
@@ -29,7 +30,7 @@ const MyListingsPage = () => {
           message.success('Listing deleted successfully');
         } catch (err) {
           message.error('Failed to delete listing');
-          console.error(err);
+          logger.error('Delete listing error:', err);
         }
       },
     });

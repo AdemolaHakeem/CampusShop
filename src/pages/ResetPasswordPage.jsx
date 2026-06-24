@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { Lock } from 'lucide-react';
 import { updatePassword } from '../services/auth';
+import logger from '../utils/logger';
 import logoIcon from '../assets/CampusShop2.0.png';
 
 const { Title, Paragraph } = Typography;
@@ -18,7 +19,7 @@ const ResetPasswordPage = () => {
       message.success('Password reset successfully! Please sign in with your new password. 🔐');
       navigate('/login');
     } catch (err) {
-      console.error('Password reset error:', err);
+      logger.error('Password reset error:', err);
       message.error(err.message || 'Failed to reset password. The link may have expired or is invalid.');
     } finally {
       setLoading(false);

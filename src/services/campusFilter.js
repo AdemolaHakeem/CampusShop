@@ -1,5 +1,3 @@
-import { supabase } from './supabase';
-
 /**
  * Middleware: scopes a Supabase listing query to the user's campus.
  *
@@ -21,9 +19,13 @@ import { supabase } from './supabase';
  *     currentUser.campusId
  *   ).order('created_at', { ascending: false });
  */
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const withCampusScope = (query, campusId) => {
   if (!campusId) return query;
 
-  // Return items matching user's campus OR global items (campus_id IS NULL)
+  if (!UUID_RE.test(campusId)) return query;
+
   return query.or(`campus_id.eq.${campusId},campus_id.is.null`);
 };

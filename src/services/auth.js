@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import logger from '../utils/logger';
 
 export const registerUser = async ({ name, email, password, phone, campusId, campusName }) => {
   const { data, error } = await supabase.auth.signUp({
@@ -31,7 +32,7 @@ export const registerUser = async ({ name, email, password, phone, campusId, cam
       { onConflict: 'id' }
     );
     if (profileError) {
-      console.error('Profile upsert warning (non-fatal):', profileError);
+      logger.warn('Profile upsert warning (non-fatal):', profileError);
     }
   }
 

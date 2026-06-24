@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { addListing, uploadListingImage } from '../services/listings';
 import { CATEGORIES } from '../utils/categories';
+import { validateListingInput, sanitizeText, validateImageFile } from '../utils/validation';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -23,15 +24,22 @@ const AddListingPage = () => {
 
   const handleUpload = async (options) => {
     const { file, onSuccess, onError } = options;
+
+    const fileError = validateImageFile(file);
+    if (fileError) {
+      message.error(fileError);
+      onError(new Error(fileError));
+      return;
+    }
+
     setUploading(true);
     try {
       const publicUrl = await uploadListingImage(file);
       setImageUrl(publicUrl);
       form.setFieldsValue({ imageURL: publicUrl });
-      message.success('Image uploaded successfully! 📸');
+      message.success('Image uploaded successfully!');
       onSuccess("Ok");
     } catch (err) {
-      console.error('Upload error:', err);
       message.error(err.message || 'Image upload failed. Please make sure storage is configured.');
       onError(err);
     } finally {
@@ -40,25 +48,33 @@ const AddListingPage = () => {
   };
 
   const onFinish = async (values) => {
+    const listingData = {
+      title: sanitizeText(values.title),
+      price: values.price,
+      description: sanitizeText(values.description),
+      category: values.category,
+      imageURL: values.imageURL || '',
+      sellerId: currentUser.uid,
+      sellerName: sanitizeText(currentUser.displayName || 'Anonymous'),
+      sellerPhone: values.sellerPhone || '',
+      campusId: currentUser.campusId || null,
+    };
+
+    const validationErrors = validateListingInput(listingData);
+    if (validationErrors.length > 0) {
+      message.error(validationErrors[0]);
+      return;
+    }
+
     setLoading(true);
     try {
-      await addListing({
-        title: values.title,
-        price: values.price,
-        description: values.description,
-        category: values.category,
-        imageURL: values.imageURL || '',
-        sellerId: currentUser.uid,
-        sellerName: currentUser.displayName || 'Anonymous',
-        sellerPhone: values.sellerPhone || '',
-        campusId: currentUser.campusId || null,
-      });
-      message.success('Listing created successfully! 🎉');
+      await addListing(listingData);
+      message.success('Listing created successfully!');
       form.resetFields();
+      setImageUrl('');
       navigate('/market');
-    } catch (err) {
+    } catch {
       message.error('Failed to create listing. Please try again.');
-      console.error(err);
     } finally {
       setLoading(false);
     }

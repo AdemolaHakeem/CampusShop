@@ -1,5 +1,9 @@
 import { supabase } from './supabase';
 import { withCampusScope } from './campusFilter';
+import logger from '../utils/logger';
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export const mapListing = (dbListing) => {
   if (!dbListing) return null;
@@ -19,13 +23,21 @@ export const mapListing = (dbListing) => {
 };
 
 export const uploadListingImage = async (file) => {
-  // Generate a unique filename to prevent collisions
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    throw new Error('Only JPEG, PNG, GIF, and WebP images are allowed.');
+  }
+  if (file.size > MAX_UPLOAD_SIZE) {
+    throw new Error('Image must be smaller than 5 MB.');
+  }
+
+  const fileExt = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
+  const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+  const safeExt = allowedExtensions.includes(fileExt) ? fileExt : 'png';
+  const fileName = `${crypto.randomUUID()}_${Date.now()}.${safeExt}`;
   const filePath = `listing-images/${fileName}`;
 
   // Upload file to 'listings' bucket
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('listings')
     .upload(filePath, file, {
       cacheControl: '3600',
@@ -101,7 +113,7 @@ export const subscribeToAllListings = (campusId, callback) => {
       if (error) throw error;
       callback(data.map(mapListing));
     } catch (err) {
-      console.error('Error fetching listings:', err);
+      logger.error('Error fetching listings:', err);
     }
   };
 
@@ -150,7 +162,7 @@ export const subscribeToUserListings = (userId, campusId, callback) => {
       if (error) throw error;
       callback(data.map(mapListing));
     } catch (err) {
-      console.error('Error fetching user listings:', err);
+      logger.error('Error fetching user listings:', err);
     }
   };
 
