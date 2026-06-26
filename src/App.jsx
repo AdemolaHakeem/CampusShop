@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout } from 'antd';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -130,6 +131,7 @@ const App = () => {
           <AppContent />
         </BrowserRouter>
       </AuthProvider>
+      <Analytics />
     </ConfigProvider>
   );
 };
