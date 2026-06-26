@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal } from 'antd';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { loginUser, resendVerification, resetPassword } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -59,10 +59,10 @@ const LoginPage = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 60, width: 60, objectFit: 'contain' }} />
+            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 56, width: 56, objectFit: 'contain' }} />
           </div>
-          <Title level={2} style={{ margin: 0 }}>Welcome Back</Title>
-          <Paragraph type="secondary" style={{ margin: 0 }}>
+          <Title level={2} style={{ margin: 0, letterSpacing: '-0.5px' }}>Welcome Back</Title>
+          <Paragraph type="secondary" style={{ margin: '4px 0 0' }}>
             Sign in to your CampusShop account
           </Paragraph>
         </div>
@@ -83,7 +83,7 @@ const LoginPage = () => {
             ]}
           >
             <Input
-              prefix={<Mail size={16} />}
+              prefix={<Mail size={16} color="#94a3b8" />}
               placeholder="Enter your email"
               autoComplete="email"
             />
@@ -95,7 +95,7 @@ const LoginPage = () => {
             style={{ marginBottom: 12 }}
           >
             <Input.Password
-              prefix={<Lock size={16} />}
+              prefix={<Lock size={16} color="#94a3b8" />}
               placeholder="Enter your password"
               autoComplete="current-password"
             />
@@ -119,7 +119,7 @@ const LoginPage = () => {
               block
               className="auth-btn"
             >
-              Sign In
+              Sign In <ArrowRight size={16} style={{ marginLeft: 6 }} />
             </Button>
           </Form.Item>
         </Form>
@@ -133,7 +133,7 @@ const LoginPage = () => {
       </div>
 
       <Modal
-        title="Reset Password "
+        title="Reset Password"
         open={forgotPasswordVisible}
         onCancel={() => {
           setForgotPasswordVisible(false);
@@ -176,7 +176,7 @@ const LoginPage = () => {
               ]}
             >
               <Input 
-                prefix={<Mail size={16} />} 
+                prefix={<Mail size={16} color="#94a3b8" />} 
                 placeholder="Enter your email" 
                 autoComplete="email"
               />

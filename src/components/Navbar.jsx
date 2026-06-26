@@ -6,7 +6,8 @@ import {
   List,
   LogOut,
   User,
-  Menu as MenuIcon,
+  Search,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { logoutUser } from '../services/auth';
@@ -15,8 +16,6 @@ import logoIcon from '../assets/CampusShop2.0.png';
 const { Header } = Layout;
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
-
-const iconStyle = { fontSize: 16, display: 'inline-flex', alignItems: 'center' };
 
 const Navbar = () => {
   const { currentUser } = useAuth();
@@ -77,8 +76,8 @@ const Navbar = () => {
           src={logoIcon} 
           alt="CampusShop Logo" 
           style={{ 
-            height: 40, 
-            width: 40, 
+            height: 36, 
+            width: 36, 
             objectFit: 'contain',
             transition: 'transform 0.2s ease',
           }} 
@@ -96,12 +95,24 @@ const Navbar = () => {
         style={{ flex: 1, minWidth: 0, border: 'none', background: 'transparent' }}
       />
 
+      <div className="navbar-extras">
+        {screens.md && (
+          <div className="navbar-search" onClick={() => {}}>
+            <Search size={14} />
+            <span>Search for items, categories, etc.</span>
+          </div>
+        )}
+        <button className="navbar-bell" onClick={() => {}}>
+          <Bell size={18} />
+        </button>
+      </div>
+
       <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
         <div className="navbar-avatar">
           <Avatar
             size={36}
             icon={<User size={18} />}
-            style={{ background: 'linear-gradient(135deg, #0062ff 0%, #0fb659 100%)', cursor: 'pointer' }}
+            style={{ background: '#1a1f36', cursor: 'pointer' }}
           />
         </div>
       </Dropdown>

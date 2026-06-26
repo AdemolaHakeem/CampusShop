@@ -66,34 +66,39 @@ const App = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#0062ff',
+          colorPrimary: '#1a1f36',
           colorBgContainer: '#ffffff',
           colorBgElevated: '#ffffff',
-          colorBgLayout: '#f5f6fa',
+          colorBgLayout: '#f8f9fb',
           borderRadius: 12,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          colorText: '#0f172a',
+          colorTextSecondary: '#64748b',
+          colorBorder: '#e2e8f0',
+          colorBorderSecondary: '#f1f5f9',
         },
         components: {
           Button: {
-            primaryShadow: '0 4px 14px rgba(0, 98, 255, 0.25)',
+            primaryShadow: '0 4px 14px rgba(26, 31, 54, 0.2)',
           },
           Card: {
             colorBgContainer: '#ffffff',
           },
           Input: {
-            colorBgContainer: '#f5f6fa',
-            activeBorderColor: '#0062ff',
+            colorBgContainer: '#f4f5f8',
+            activeBorderColor: '#2563eb',
+            hoverBorderColor: 'rgba(37, 99, 235, 0.3)',
           },
           Select: {
-            colorBgContainer: '#f5f6fa',
+            colorBgContainer: '#f4f5f8',
           },
           Menu: {
-            itemSelectedBg: 'rgba(0, 98, 255, 0.08)',
-            itemSelectedColor: '#0062ff',
+            itemSelectedBg: 'rgba(37, 99, 235, 0.06)',
+            itemSelectedColor: '#2563eb',
             colorBgContainer: 'transparent',
           },
           Layout: {
-            headerBg: '#ffffff',
+            headerBg: '#f8f9fb',
           },
         },
       }}

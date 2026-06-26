@@ -18,7 +18,7 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
     createdAt,
   } = listing;
 
-  const fallbackImg = `https://placehold.co/400x300/1a1a2e/0062ff?text=${encodeURIComponent(title || 'Item')}`;
+  const fallbackImg = `https://placehold.co/400x300/f1f3f7/64748b?text=${encodeURIComponent(title || 'Item')}`;
 
   const cardActions = [];
 
@@ -37,7 +37,7 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
       <Tooltip title="Delete listing" key="delete">
         <Trash2
           size={16}
-          color="#ff4d4f"
+          color="#ef4444"
           style={{ cursor: 'pointer' }}
           onClick={() => onDelete(listing.id)}
         />
@@ -64,7 +64,10 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
       actions={cardActions.length > 0 ? cardActions : undefined}
     >
       <div className="listing-card-content">
-        <Tag color={CATEGORY_COLORS[category] || '#8c8c8c'} style={{ marginBottom: 8 }}>
+        <Tag 
+          color={CATEGORY_COLORS[category] || '#8c8c8c'} 
+          style={{ marginBottom: 10, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em' }}
+        >
           {category}
         </Tag>
         <Meta
@@ -73,19 +76,19 @@ const ListingCard = ({ listing, showActions = false, onDelete }) => {
             <Paragraph
               ellipsis={{ rows: 2 }}
               type="secondary"
-              style={{ marginBottom: 8, fontSize: 13 }}
+              style={{ marginBottom: 10, fontSize: 13, lineHeight: 1.5 }}
             >
               {description}
             </Paragraph>
           }
         />
         <div className="listing-card-footer">
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            <Clock size={12} style={{ marginRight: 4 }} />
+          <Text type="secondary" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Clock size={12} />
             {timeAgo(createdAt)}
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            by {sellerName}
+            {sellerName}
           </Text>
         </div>
       </div>

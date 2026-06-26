@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message } from 'antd';
-import { Lock } from 'lucide-react';
+import { Lock, ArrowRight } from 'lucide-react';
 import { updatePassword } from '../services/auth';
 import logoIcon from '../assets/CampusShop2.0.png';
 
@@ -30,10 +30,10 @@ const ResetPasswordPage = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 60, width: 60, objectFit: 'contain' }} />
+            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 56, width: 56, objectFit: 'contain' }} />
           </div>
-          <Title level={2} style={{ margin: 0 }}>Reset Password</Title>
-          <Paragraph type="secondary" style={{ margin: 0 }}>
+          <Title level={2} style={{ margin: 0, letterSpacing: '-0.5px' }}>Reset Password</Title>
+          <Paragraph type="secondary" style={{ margin: '4px 0 0' }}>
             Create a secure new password for your account
           </Paragraph>
         </div>
@@ -54,7 +54,7 @@ const ResetPasswordPage = () => {
             ]}
           >
             <Input.Password
-              prefix={<Lock size={16} />}
+              prefix={<Lock size={16} color="#94a3b8" />}
               placeholder="Enter new password (min. 8 characters)"
               autoComplete="new-password"
             />
@@ -76,7 +76,7 @@ const ResetPasswordPage = () => {
             ]}
           >
             <Input.Password
-              prefix={<Lock size={16} />}
+              prefix={<Lock size={16} color="#94a3b8" />}
               placeholder="Confirm new password"
               autoComplete="new-password"
             />
@@ -90,7 +90,7 @@ const ResetPasswordPage = () => {
               block
               className="auth-btn"
             >
-              Update Password
+              Update Password <ArrowRight size={16} style={{ marginLeft: 6 }} />
             </Button>
           </Form.Item>
         </Form>

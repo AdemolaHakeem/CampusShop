@@ -11,6 +11,7 @@ import {
   CheckCircle,
   Star,
   Rocket,
+  CircleCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoIcon from '../assets/CampusShop2.0.png';
@@ -22,40 +23,40 @@ const { Title, Text, Paragraph } = Typography;
 
 const features = [
   {
-    icon: <Shield size={24} />,
+    icon: <Shield size={22} />,
     title: 'Students Only',
     desc: 'A trusted community exclusive to verified university students. Trade with confidence.',
-    color: '#0062ff',
+    color: '#2563eb',
   },
   {
-    icon: <Zap size={24} />,
+    icon: <Zap size={22} />,
     title: 'Instant Listings',
     desc: 'Post items in under 30 seconds. Your listing goes live immediately for everyone to see.',
-    color: '#f093fb',
+    color: '#8b5cf6',
   },
   {
-    icon: <MessageCircle size={24} />,
+    icon: <MessageCircle size={22} />,
     title: 'WhatsApp Connect',
     desc: 'Contact sellers directly via WhatsApp. No in-app messaging hassle, just real conversations.',
-    color: '#25D366',
+    color: '#16a34a',
   },
   {
-    icon: <Search size={24} />,
+    icon: <Search size={22} />,
     title: 'Smart Search',
     desc: 'Find exactly what you need with powerful search and category filtering.',
-    color: '#ffd700',
+    color: '#eab308',
   },
   {
-    icon: <Users size={24} />,
+    icon: <Users size={22} />,
     title: 'Campus Community',
     desc: 'Buy and sell within your campus. Meet locally, trade safely, build connections.',
-    color: '#13c2c2',
+    color: '#0891b2',
   },
   {
-    icon: <Rocket size={24} />,
+    icon: <Rocket size={22} />,
     title: 'Real-Time Sync',
     desc: 'Listings update in real-time across all devices. Never miss a great deal.',
-    color: '#fa8c16',
+    color: '#ea580c',
   },
 ];
 
@@ -64,27 +65,28 @@ const steps = [
     num: '01',
     title: 'Create Your Account',
     desc: 'Sign up in seconds with your email. Join the campus marketplace community.',
-    icon: <PlusCircle size={28} />,
+    icon: <PlusCircle size={24} />,
   },
   {
     num: '02',
     title: 'Post or Browse',
     desc: 'List items you want to sell or browse what others are offering on campus.',
-    icon: <Search size={28} />,
+    icon: <Search size={24} />,
   },
   {
     num: '03',
     title: 'Connect & Trade',
     desc: 'Contact sellers via WhatsApp, meet on campus, and complete your trade.',
-    icon: <MessageCircle size={28} />,
+    icon: <MessageCircle size={24} />,
   },
 ];
 
 const stats = [
-  { value: '100%', label: 'Free to Use' },
-  { value: '< 30s', label: 'To Post a Listing' },
-  { value: '24/7', label: 'Always Available' },
-  { value: '∞', label: 'Unlimited Listings' },
+  { value: '100%', label: 'Free to Use', icon: <CircleCheck size={18} color="#2563eb" /> },
+  { value: '< 30s', label: 'To Post a Listing', icon: <Zap size={18} color="#2563eb" /> },
+  { value: '24/7', label: 'Always Available', icon: <Shield size={18} color="#2563eb" /> },
+  { value: '∞', label: 'Unlimited Listings', icon: <Rocket size={18} color="#2563eb" /> },
+  { value: 'Verified', label: 'Students Only', icon: <Users size={18} color="#2563eb" /> },
 ];
 
 const LandingPage = () => {
@@ -106,8 +108,8 @@ const LandingPage = () => {
               src={logoIcon} 
               alt="CampusShop Logo" 
               style={{ 
-                height: 40, 
-                width: 40, 
+                height: 36, 
+                width: 36, 
                 objectFit: 'contain',
                 transition: 'transform 0.2s ease',
               }} 
@@ -136,40 +138,35 @@ const LandingPage = () => {
 
       {/* ===== HERO ===== */}
       <section className="hero-section">
-        <div className="hero-glow hero-glow-1" />
-        <div className="hero-glow hero-glow-2" />
-        <div className="hero-glow hero-glow-3" />
-
         <div className="hero-content">
           <div className="hero-badge">
-            <Star size={14} color="#ffd700" style={{ marginRight: 6 }} />
+            <CircleCheck size={14} style={{ marginRight: 6 }} />
             <span>The #1 Campus Marketplace for Students</span>
           </div>
 
           <Title level={1} className="hero-title">
-            Buy &amp; Sell Within
+            Buy & Sell
             <br />
-            <span className="hero-gradient-text">Your Campus</span>
+            Within <span className="hero-gradient-text">Your Campus</span>
           </Title>
 
           <Paragraph className="hero-subtitle">
-            CampusShop connects university students in a trusted, campus-only marketplace.
-            Sell what you don&apos;t need, find what you do, all within your university community.
+            CampusShop connects university students in a trusted,
+            campus-only marketplace. Sell what you don&apos;t need,
+            find what you do, all within your university community.
           </Paragraph>
 
           <Space size={16} wrap className="hero-actions">
             <Button
               type="primary"
               size="large"
-              icon={<ArrowRight size={16} />}
               onClick={() => navigate('/signup')}
               className="hero-btn-primary"
             >
-              Start Trading
+              Start Trading <ArrowRight size={16} style={{ marginLeft: 6 }} />
             </Button>
             <Button
               size="large"
-              ghost
               onClick={() => navigate('/login')}
               className="hero-btn-secondary"
             >
@@ -179,7 +176,7 @@ const LandingPage = () => {
 
           <div className="hero-social-proof">
             <div className="hero-avatars">
-              {['#0062ff', '#0fb659', '#13c2c2', '#fa8c16', '#3b82f6'].map((bg, i) => (
+              {['#2563eb', '#16a34a', '#0891b2', '#ea580c', '#8b5cf6'].map((bg, i) => (
                 <div key={i} className="hero-avatar" style={{ background: bg, zIndex: 5 - i }}>
                   {String.fromCharCode(65 + i)}
                 </div>
@@ -197,21 +194,21 @@ const LandingPage = () => {
             <img className="floating-card-img" src={macbookImg} alt="MacBook Pro M3" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>MacBook Pro M3</Text>
-              <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦450,000</Text>
+              <Text style={{ color: '#16a34a', fontWeight: 700, fontSize: 14 }}>₦450,000</Text>
             </div>
           </div>
           <div className="floating-card floating-card-2">
             <img className="floating-card-img" src={textbookImg} alt="Textbook Bundle" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>Textbook Bundle</Text>
-              <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦8,500</Text>
+              <Text style={{ color: '#16a34a', fontWeight: 700, fontSize: 14 }}>₦15,000</Text>
             </div>
           </div>
           <div className="floating-card floating-card-3">
             <img className="floating-card-img" src={deskImg} alt="Study Desk" />
             <div className="floating-card-info">
               <Text strong style={{ fontSize: 13 }}>Study Desk</Text>
-              <Text style={{ color: '#25D366', fontWeight: 700, fontSize: 14 }}>₦15,000</Text>
+              <Text style={{ color: '#16a34a', fontWeight: 700, fontSize: 14 }}>₦15,000</Text>
             </div>
           </div>
         </div>
@@ -221,8 +218,9 @@ const LandingPage = () => {
       <section className="stats-section">
         <Row gutter={[32, 32]} justify="center">
           {stats.map((stat, i) => (
-            <Col key={i} xs={12} sm={6}>
+            <Col key={i} xs={12} sm={4}>
               <div className="stat-item">
+                <div className="stat-icon-wrap">{stat.icon}</div>
                 <div className="stat-value">{stat.value}</div>
                 <div className="stat-label">{stat.label}</div>
               </div>
@@ -248,13 +246,13 @@ const LandingPage = () => {
           {features.map((feat, i) => (
             <Col key={i} xs={24} sm={12} lg={8}>
               <Card className="feature-card" bordered={false}>
-                <div className="feature-icon" style={{ color: feat.color, background: `${feat.color}15` }}>
+                <div className="feature-icon" style={{ color: feat.color, background: `${feat.color}10` }}>
                   {feat.icon}
                 </div>
-                <Title level={4} style={{ marginTop: 16, marginBottom: 8 }}>
+                <Title level={4} style={{ marginTop: 16, marginBottom: 8, letterSpacing: '-0.3px' }}>
                   {feat.title}
                 </Title>
-                <Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 14 }}>
+                <Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 14, lineHeight: 1.6 }}>
                   {feat.desc}
                 </Paragraph>
               </Card>
@@ -279,8 +277,8 @@ const LandingPage = () => {
               <div className="step-card">
                 <div className="step-num">{step.num}</div>
                 <div className="step-icon">{step.icon}</div>
-                <Title level={4} style={{ marginBottom: 8 }}>{step.title}</Title>
-                <Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 14 }}>
+                <Title level={4} style={{ marginBottom: 8, letterSpacing: '-0.3px' }}>{step.title}</Title>
+                <Paragraph type="secondary" style={{ marginBottom: 0, fontSize: 14, lineHeight: 1.6 }}>
                   {step.desc}
                 </Paragraph>
                 {i < steps.length - 1 && <div className="step-connector" />}
@@ -306,29 +304,29 @@ const LandingPage = () => {
               name: 'Adaeze O.',
               dept: 'Computer Science, 300L',
               text: 'Sold my old textbooks in less than 24 hours! The WhatsApp integration makes it so easy to connect with buyers directly.',
-              avatar: '#0062ff',
+              avatar: '#2563eb',
             },
             {
               name: 'Tunde M.',
               dept: 'Engineering, 400L',
               text: 'Found a barely-used drafting set for half the price. CampusShop saved me a lot of money this semester.',
-              avatar: '#fa8c16',
+              avatar: '#ea580c',
             },
             {
               name: 'Fatima A.',
               dept: 'Medicine, 200L',
               text: "I love that it's only students. Feels way safer than random marketplaces. Already recommended it to my entire class.",
-              avatar: '#f093fb',
+              avatar: '#8b5cf6',
             },
           ].map((t, i) => (
             <Col key={i} xs={24} sm={8}>
               <div className="testimonial-card">
                 <div className="testimonial-stars">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} size={14} color="#ffd700" fill="#ffd700" />
+                    <Star key={j} size={14} color="#eab308" fill="#eab308" />
                   ))}
                 </div>
-                <Paragraph style={{ fontSize: 14, lineHeight: 1.7, marginBottom: 16 }}>
+                <Paragraph style={{ fontSize: 14, lineHeight: 1.7, marginBottom: 16, color: '#334155' }}>
                   &ldquo;{t.text}&rdquo;
                 </Paragraph>
                 <div className="testimonial-author">
@@ -349,12 +347,11 @@ const LandingPage = () => {
 
       {/* ===== CTA ===== */}
       <section className="cta-section">
-        <div className="cta-glow" />
         <div className="cta-content">
-          <Title level={2} style={{ marginBottom: 8, fontSize: 36 }}>
+          <Title level={2} style={{ marginBottom: 8, fontSize: 36, letterSpacing: '-1px' }}>
             Ready to Start Trading?
           </Title>
-          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 540, margin: '0 auto 28px' }}>
+          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 540, margin: '0 auto 32px', lineHeight: 1.6 }}>
             Join hundreds of students who are already buying and selling on campus.
             Your next great deal is just a click away.
           </Paragraph>
@@ -370,7 +367,7 @@ const LandingPage = () => {
             ].map((item, i) => (
               <Col key={i} xs={12} sm={8}>
                 <Space size={8} align="center">
-                  <CheckCircle size={16} color="#52c41a" />
+                  <CheckCircle size={16} color="#16a34a" />
                   <Text style={{ fontSize: 14 }}>{item}</Text>
                 </Space>
               </Col>
@@ -381,11 +378,10 @@ const LandingPage = () => {
             <Button
               type="primary"
               size="large"
-              icon={<ArrowRight size={16} />}
               onClick={() => navigate('/signup')}
               className="hero-btn-primary"
             >
-              Create Free Account
+              Create Free Account <ArrowRight size={16} style={{ marginLeft: 6 }} />
             </Button>
             <Button
               size="large"
@@ -406,12 +402,12 @@ const LandingPage = () => {
               src={logoIcon} 
               alt="CampusShop Logo" 
               style={{ 
-                height: 32, 
-                width: 32, 
+                height: 28, 
+                width: 28, 
                 objectFit: 'contain',
               }} 
             />
-            <span className="logo-text" style={{ fontSize: 16 }}>CampusShop</span>
+            <span className="logo-text" style={{ fontSize: 15 }}>CampusShop</span>
           </div>
           <Text type="secondary" style={{ fontSize: 13 }}>
             © {new Date().getFullYear()} CampusShop. Built for students, by students.

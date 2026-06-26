@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message, Modal, Divider } from 'antd';
-import { Mail, Lock, User, Phone, Building2 } from 'lucide-react';
+import { Mail, Lock, User, Phone, Building2, ArrowRight } from 'lucide-react';
 import { registerUser, resendVerification } from '../services/auth';
 import CampusSearch from '../components/CampusSearch';
 import logoIcon from '../assets/CampusShop2.0.png';
@@ -92,10 +92,10 @@ const SignupPage = () => {
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 60, width: 60, objectFit: 'contain' }} />
+            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 56, width: 56, objectFit: 'contain' }} />
           </div>
-          <Title level={2} style={{ margin: 0 }}>Join CampusShop</Title>
-          <Paragraph type="secondary" style={{ margin: 0 }}>
+          <Title level={2} style={{ margin: 0, letterSpacing: '-0.5px' }}>Join CampusShop</Title>
+          <Paragraph type="secondary" style={{ margin: '4px 0 0' }}>
             Create your account and start trading on campus
           </Paragraph>
         </div>
@@ -110,12 +110,12 @@ const SignupPage = () => {
         >
           {/* ---- Campus Selection (Mandatory) ---- */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Building2 size={15} color="#2563eb" />
               <Text strong style={{ fontSize: 14, color: 'var(--text-primary)' }}>
-                <Building2 size={16} style={{ marginRight: 6, color: '#0062ff' }} />
                 Your School or University
               </Text>
-              <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
+              <Text type="secondary" style={{ fontSize: 11, marginLeft: 4 }}>
                 (Required)
               </Text>
             </div>
@@ -126,7 +126,7 @@ const SignupPage = () => {
                 setCampusName(name || '');
               }}
             />
-            <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 6 }}>
+            <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 6, lineHeight: 1.4 }}>
               Select your institution from the list. Type at least 2 characters to search.
             </Text>
           </div>
@@ -138,7 +138,7 @@ const SignupPage = () => {
             rules={[{ required: true, message: 'Please enter your full name' }]}
           >
             <Input
-              prefix={<User size={16} />}
+              prefix={<User size={16} color="#94a3b8" />}
               placeholder="e.g. Alex Johnson"
               autoComplete="name"
             />
@@ -152,7 +152,7 @@ const SignupPage = () => {
             ]}
           >
             <Input
-              prefix={<Mail size={16} />}
+              prefix={<Mail size={16} color="#94a3b8" />}
               placeholder="e.g. alex@email.com"
               autoComplete="email"
             />
@@ -162,7 +162,7 @@ const SignupPage = () => {
             name="phone"
           >
             <Input
-              prefix={<Phone size={16} />}
+              prefix={<Phone size={16} color="#94a3b8" />}
               placeholder="Phone Number e.g. +234... (for WhatsApp)"
               autoComplete="tel"
             />
@@ -176,7 +176,7 @@ const SignupPage = () => {
             ]}
           >
             <Input.Password
-              prefix={<Lock size={16} />}
+              prefix={<Lock size={16} color="#94a3b8" />}
               placeholder="Create a password (min. 8 characters)"
               autoComplete="new-password"
             />
@@ -198,7 +198,7 @@ const SignupPage = () => {
             ]}
           >
             <Input.Password
-              prefix={<Lock size={16} />}
+              prefix={<Lock size={16} color="#94a3b8" />}
               placeholder="Confirm your password"
               autoComplete="new-password"
             />
@@ -212,7 +212,7 @@ const SignupPage = () => {
               block
               className="auth-btn"
             >
-              Create Account
+              Create Account <ArrowRight size={16} style={{ marginLeft: 6 }} />
             </Button>
           </Form.Item>
         </Form>

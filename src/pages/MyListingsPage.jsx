@@ -1,5 +1,5 @@
 import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button } from 'antd';
-import { List, AlertCircle, Plus } from 'lucide-react';
+import { List, AlertCircle, Plus, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserListings } from '../hooks/useListings';
@@ -45,16 +45,35 @@ const MyListingsPage = () => {
 
   return (
     <div className="my-listings-page">
-      <div className="page-header">
-        <Space align="center" size={12}>
-          <List size={28} color="#0062ff" />
+      <div className="page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+        <Space align="center" size={14}>
+          <div style={{
+            width: 44,
+            height: 44,
+            borderRadius: 'var(--radius-md)',
+            background: 'var(--accent-blue-bg)',
+            border: '1px solid var(--accent-blue-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Package size={22} color="#2563eb" />
+          </div>
           <div>
-            <Title level={2} style={{ margin: 0 }}>My Listings</Title>
-            <Text type="secondary">
+            <Title level={2} style={{ margin: 0, letterSpacing: '-0.5px' }}>My Listings</Title>
+            <Text type="secondary" style={{ fontSize: 14 }}>
               {listings.length} item{listings.length !== 1 ? 's' : ''} posted
             </Text>
           </div>
         </Space>
+        <Button
+          type="primary"
+          icon={<Plus size={16} />}
+          onClick={() => navigate('/add-listing')}
+          className="sell-btn"
+        >
+          New Listing
+        </Button>
       </div>
 
       {listings.length === 0 ? (
@@ -68,7 +87,12 @@ const MyListingsPage = () => {
               </Space>
             }
           >
-            <Button type="primary" icon={<Plus size={16} />} onClick={() => navigate('/add-listing')}>
+            <Button 
+              type="primary" 
+              icon={<Plus size={16} />} 
+              onClick={() => navigate('/add-listing')}
+              className="sell-btn"
+            >
               Create Listing
             </Button>
           </Empty>
