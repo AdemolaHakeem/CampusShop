@@ -147,7 +147,7 @@ const LoginPage = () => {
           <Paragraph type="secondary" style={{ marginBottom: 24 }}>
             Enter your email below. We'll send you a secure link to reset your password.
           </Paragraph>
-          
+
           <Form
             form={resetForm}
             layout="vertical"
@@ -175,9 +175,9 @@ const LoginPage = () => {
                 { type: 'email', message: 'Please enter a valid email' },
               ]}
             >
-              <Input 
-                prefix={<Mail size={16} color="#94a3b8" />} 
-                placeholder="Enter your email" 
+              <Input
+                prefix={<Mail size={16} color="#94a3b8" />}
+                placeholder="Enter your email"
                 autoComplete="email"
               />
             </Form.Item>

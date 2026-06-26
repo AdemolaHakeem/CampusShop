@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { Lock, ArrowRight } from 'lucide-react';
 import { updatePassword } from '../services/auth';
-import logoIcon from '../assets/CampusShop2.0.png';
+import logoIcon from '../assets/campusshopwordlogo.png';
 
 const { Title, Paragraph } = Typography;
 
@@ -29,8 +29,8 @@ const ResetPasswordPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 56, width: 56, objectFit: 'contain' }} />
+          <div className="auth-logo" style={{ background: 'transparent', boxShadow: 'none', width: 'auto', height: 'auto' }}>
+            <img src={logoIcon} alt="CampusShop Logo" style={{ height: 44, objectFit: 'contain' }} />
           </div>
           <Title level={2} style={{ margin: 0, letterSpacing: '-0.5px' }}>Reset Password</Title>
           <Paragraph type="secondary" style={{ margin: '4px 0 0' }}>

@@ -14,7 +14,8 @@ import {
   CircleCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import logoIcon from '../assets/CampusShop2.0.png';
+import Footer from '../components/Footer';
+import logoIcon from '../assets/campusshopwordlogo.png';
 import macbookImg from '../assets/MACBOOK.jpg';
 import textbookImg from '../assets/TEXTBOOK.jpg';
 import deskImg from '../assets/DESK.jpg';
@@ -108,14 +109,12 @@ const LandingPage = () => {
               src={logoIcon} 
               alt="CampusShop Logo" 
               style={{ 
-                height: 36, 
-                width: 36, 
+                height: 46, 
                 objectFit: 'contain',
                 transition: 'transform 0.2s ease',
               }} 
               className="logo-img-hover"
             />
-            <span className="logo-text">CampusShop</span>
           </div>
           <Space size={12}>
             <Button
@@ -344,76 +343,7 @@ const LandingPage = () => {
           ))}
         </Row>
       </section>
-
-      {/* ===== CTA ===== */}
-      <section className="cta-section">
-        <div className="cta-content">
-          <Title level={2} style={{ marginBottom: 8, fontSize: 36, letterSpacing: '-1px' }}>
-            Ready to Start Trading?
-          </Title>
-          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 540, margin: '0 auto 32px', lineHeight: 1.6 }}>
-            Join hundreds of students who are already buying and selling on campus.
-            Your next great deal is just a click away.
-          </Paragraph>
-
-          <Row gutter={[32, 16]} justify="center" style={{ marginBottom: 32, maxWidth: 700, margin: '0 auto 32px' }}>
-            {[
-              'No fees or commissions',
-              'List in under 30 seconds',
-              'Direct WhatsApp contact',
-              'Students-only community',
-              'Real-time live listings',
-              'Works on any device',
-            ].map((item, i) => (
-              <Col key={i} xs={12} sm={8}>
-                <Space size={8} align="center">
-                  <CheckCircle size={16} color="#16a34a" />
-                  <Text style={{ fontSize: 14 }}>{item}</Text>
-                </Space>
-              </Col>
-            ))}
-          </Row>
-
-          <Space size={16} wrap style={{ justifyContent: 'center' }}>
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => navigate('/signup')}
-              className="hero-btn-primary"
-            >
-              Create Free Account <ArrowRight size={16} style={{ marginLeft: 6 }} />
-            </Button>
-            <Button
-              size="large"
-              onClick={() => navigate('/login')}
-              className="hero-btn-secondary"
-            >
-              Sign In Instead
-            </Button>
-          </Space>
-        </div>
-      </section>
-
-      {/* ===== FOOTER ===== */}
-      <footer className="landing-footer">
-        <div className="landing-footer-inner">
-          <div className="landing-nav-brand">
-            <img 
-              src={logoIcon} 
-              alt="CampusShop Logo" 
-              style={{ 
-                height: 28, 
-                width: 28, 
-                objectFit: 'contain',
-              }} 
-            />
-            <span className="logo-text" style={{ fontSize: 15 }}>CampusShop</span>
-          </div>
-          <Text type="secondary" style={{ fontSize: 13 }}>
-            © {new Date().getFullYear()} CampusShop. Built for students, by students.
-          </Text>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

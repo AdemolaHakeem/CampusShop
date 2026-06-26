@@ -10,6 +10,15 @@ import MarketplacePage from './pages/MarketplacePage';
 import AddListingPage from './pages/AddListingPage';
 import MyListingsPage from './pages/MyListingsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import FAQPage from './pages/FAQPage';
+import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
+import HelpCenterPage from './pages/HelpCenterPage';
+import SafetyTipsPage from './pages/SafetyTipsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
+import HowItWorksPage from './pages/HowItWorksPage';
 
 const { Content } = Layout;
 
@@ -18,7 +27,11 @@ const AppContent = () => {
   const location = useLocation();
 
   // Pages that should NOT show the navbar
-  const noNavbarRoutes = ['/', '/login', '/signup', '/reset-password'];
+  const noNavbarRoutes = [
+    '/', '/login', '/signup', '/reset-password',
+    '/faq', '/contact', '/about', '/help', '/safety',
+    '/terms', '/privacy', '/community-guidelines', '/how-it-works',
+  ];
   const showNavbar = currentUser && !noNavbarRoutes.includes(location.pathname);
 
   return (
@@ -30,6 +43,15 @@ const AppContent = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/help" element={<HelpCenterPage />} />
+          <Route path="/safety" element={<SafetyTipsPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/community-guidelines" element={<CommunityGuidelinesPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route
             path="/market"
             element={

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { logoutUser } from '../services/auth';
-import logoIcon from '../assets/CampusShop2.0.png';
+import logoIcon from '../assets/campusshopwordlogo.png';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -76,14 +76,12 @@ const Navbar = () => {
           src={logoIcon} 
           alt="CampusShop Logo" 
           style={{ 
-            height: 36, 
-            width: 36, 
+            height: 40, 
             objectFit: 'contain',
             transition: 'transform 0.2s ease',
           }} 
           className="logo-img-hover"
         />
-        {screens.sm && <span className="logo-text">CampusShop</span>}
       </Link>
 
       <Menu
