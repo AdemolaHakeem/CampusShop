@@ -133,7 +133,7 @@ const LoginPage = () => {
       </div>
 
       <Modal
-        title="Reset Password 🔒"
+        title="Reset Password "
         open={forgotPasswordVisible}
         onCancel={() => {
           setForgotPasswordVisible(false);
