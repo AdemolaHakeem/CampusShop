@@ -24,21 +24,25 @@ CREATE TABLE IF NOT EXISTS public.listings (
 ALTER TABLE public.listings ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can browse listings
+DROP POLICY IF EXISTS "Listings are publicly readable" ON public.listings;
 CREATE POLICY "Listings are publicly readable"
   ON public.listings FOR SELECT
   USING (true);
 
 -- Authenticated users can insert their own listings
+DROP POLICY IF EXISTS "Users can insert their own listings" ON public.listings;
 CREATE POLICY "Users can insert their own listings"
   ON public.listings FOR INSERT
   WITH CHECK (auth.uid() = seller_id);
 
 -- Users can update their own listings
+DROP POLICY IF EXISTS "Users can update their own listings" ON public.listings;
 CREATE POLICY "Users can update their own listings"
   ON public.listings FOR UPDATE
   USING (auth.uid() = seller_id);
 
 -- Users can delete their own listings
+DROP POLICY IF EXISTS "Users can delete their own listings" ON public.listings;
 CREATE POLICY "Users can delete their own listings"
   ON public.listings FOR DELETE
   USING (auth.uid() = seller_id);

@@ -38,21 +38,25 @@ CREATE TABLE IF NOT EXISTS public.reviews (
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can read reviews
+DROP POLICY IF EXISTS "Reviews are publicly readable" ON public.reviews;
 CREATE POLICY "Reviews are publicly readable"
   ON public.reviews FOR SELECT
   USING (true);
 
 -- Authenticated users can insert their own reviews
+DROP POLICY IF EXISTS "Users can insert their own reviews" ON public.reviews;
 CREATE POLICY "Users can insert their own reviews"
   ON public.reviews FOR INSERT
   WITH CHECK (auth.uid() = reviewer_id);
 
 -- Users can update their own reviews
+DROP POLICY IF EXISTS "Users can update their own reviews" ON public.reviews;
 CREATE POLICY "Users can update their own reviews"
   ON public.reviews FOR UPDATE
   USING (auth.uid() = reviewer_id);
 
 -- Users can delete their own reviews
+DROP POLICY IF EXISTS "Users can delete their own reviews" ON public.reviews;
 CREATE POLICY "Users can delete their own reviews"
   ON public.reviews FOR DELETE
   USING (auth.uid() = reviewer_id);

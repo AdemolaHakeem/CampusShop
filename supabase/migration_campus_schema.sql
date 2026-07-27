@@ -56,19 +56,23 @@ ALTER TABLE public.campuses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles  ENABLE ROW LEVEL SECURITY;
 
 -- Everyone (even unauthenticated visitors) can browse campuses
+DROP POLICY IF EXISTS "Campuses are publicly readable" ON public.campuses;
 CREATE POLICY "Campuses are publicly readable"
   ON public.campuses FOR SELECT
   USING (true);
 
 -- Only authenticated users can manage their own profile rows
+DROP POLICY IF EXISTS "Profiles are readable by authenticated users" ON public.profiles;
 CREATE POLICY "Profiles are readable by authenticated users"
   ON public.profiles FOR SELECT
   USING (auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
 CREATE POLICY "Users can insert their own profile"
   ON public.profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);

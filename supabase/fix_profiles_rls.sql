@@ -10,6 +10,7 @@ DROP POLICY IF EXISTS "Profiles are readable by authenticated users" ON public.p
 DROP POLICY IF EXISTS "Profiles are readable by all authenticated users" ON public.profiles;
 
 -- Users can only read their own profile
+DROP POLICY IF EXISTS "Users can read their own profile" ON public.profiles;
 CREATE POLICY "Users can read their own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
@@ -26,21 +27,25 @@ CREATE POLICY "Users can read their own profile"
 -- ============================================================
 
 -- Allow anyone to view listing images (needed for the marketplace)
+DROP POLICY IF EXISTS "Public can view listing images" ON storage.objects;
 CREATE POLICY "Public can view listing images"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'listings');
 
 -- Allow authenticated users to upload images
+DROP POLICY IF EXISTS "Authenticated users can upload listing images" ON storage.objects;
 CREATE POLICY "Authenticated users can upload listing images"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'listings' AND auth.role() = 'authenticated');
 
 -- Allow users to update their own uploads
+DROP POLICY IF EXISTS "Users can update their own uploads" ON storage.objects;
 CREATE POLICY "Users can update their own uploads"
   ON storage.objects FOR UPDATE
   USING (bucket_id = 'listings' AND auth.uid() = owner);
 
 -- Allow users to delete their own uploads
+DROP POLICY IF EXISTS "Users can delete their own uploads" ON storage.objects;
 CREATE POLICY "Users can delete their own uploads"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'listings' AND auth.uid() = owner);
