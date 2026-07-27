@@ -1,9 +1,9 @@
 import { Typography, Row, Col, Empty, Spin, Space, Modal, message, Button } from 'antd';
-import { List, AlertCircle, Plus, Package } from 'lucide-react';
+import { List, AlertCircle, Plus, Package, CheckCircle, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserListings } from '../hooks/useListings';
-import { deleteListing } from '../services/listings';
+import { deleteListing, markListingAsSold, markListingAsActive } from '../services/listings';
 import ListingCard from '../components/ListingCard';
 
 const { Title, Text } = Typography;
@@ -13,6 +13,9 @@ const MyListingsPage = () => {
   const { currentUser } = useAuth();
   const { listings, loading } = useUserListings(currentUser?.uid);
   const navigate = useNavigate();
+
+  const activeListings = listings.filter(l => l.status !== 'sold');
+  const soldListings = listings.filter(l => l.status === 'sold');
 
   const handleDelete = (id) => {
     confirm({
@@ -29,6 +32,47 @@ const MyListingsPage = () => {
           message.success('Listing deleted successfully');
         } catch (err) {
           message.error('Failed to delete listing');
+          console.error(err);
+        }
+      },
+    });
+  };
+
+  const handleMarkSold = (id) => {
+    confirm({
+      title: 'Mark this item as sold?',
+      icon: <CheckCircle size={20} style={{ color: '#16a34a' }} />,
+      content: 'This will hide the listing from the marketplace. Buyers can still contact you about past listings.',
+      okText: 'Mark as Sold',
+      okType: 'primary',
+      cancelText: 'Cancel',
+      centered: true,
+      onOk: async () => {
+        try {
+          await markListingAsSold(id);
+          message.success('Listing marked as sold ✅');
+        } catch (err) {
+          message.error('Failed to update listing');
+          console.error(err);
+        }
+      },
+    });
+  };
+
+  const handleMarkActive = (id) => {
+    confirm({
+      title: 'Relist this item?',
+      icon: <RotateCcw size={20} style={{ color: '#2563eb' }} />,
+      content: 'This will make the listing visible in the marketplace again.',
+      okText: 'Relist',
+      cancelText: 'Cancel',
+      centered: true,
+      onOk: async () => {
+        try {
+          await markListingAsActive(id);
+          message.success('Listing relisted 🔄');
+        } catch (err) {
+          message.error('Failed to relist');
           console.error(err);
         }
       },
@@ -98,13 +142,39 @@ const MyListingsPage = () => {
           </Empty>
         </div>
       ) : (
-        <Row gutter={[20, 20]} className="listings-grid">
-          {listings.map((listing) => (
-            <Col key={listing.id} xs={24} sm={12} md={8} lg={6}>
-              <ListingCard listing={listing} showActions onDelete={handleDelete} />
-            </Col>
-          ))}
-        </Row>
+        <>
+          {/* Active Listings */}
+          {activeListings.length > 0 && (
+            <>
+              <Title level={4} style={{ margin: '24px 0 16px', letterSpacing: '-0.3px' }}>
+                Active ({activeListings.length})
+              </Title>
+              <Row gutter={[20, 20]} className="listings-grid">
+                {activeListings.map((listing) => (
+                  <Col key={listing.id} xs={24} sm={12} md={8} lg={6}>
+                    <ListingCard listing={listing} showActions onDelete={handleDelete} onMarkSold={handleMarkSold} />
+                  </Col>
+                ))}
+              </Row>
+            </>
+          )}
+
+          {/* Sold Listings */}
+          {soldListings.length > 0 && (
+            <>
+              <Title level={4} style={{ margin: '32px 0 16px', letterSpacing: '-0.3px', color: 'var(--text-secondary)' }}>
+                Sold ({soldListings.length})
+              </Title>
+              <Row gutter={[20, 20]} className="listings-grid">
+                {soldListings.map((listing) => (
+                  <Col key={listing.id} xs={24} sm={12} md={8} lg={6}>
+                    <ListingCard listing={listing} showActions onDelete={handleDelete} onMarkSold={handleMarkSold} />
+                  </Col>
+                ))}
+              </Row>
+            </>
+          )}
+        </>
       )}
     </div>
   );

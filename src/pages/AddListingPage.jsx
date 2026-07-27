@@ -50,6 +50,7 @@ const AddListingPage = () => {
         price: values.price,
         description: values.description,
         category: values.category,
+        condition: values.condition || null,
         imageURL: values.imageURL || '',
         sellerId: currentUser.uid,
         sellerName: currentUser.displayName || 'Anonymous',

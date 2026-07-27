@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Input, Select, Row, Col, Empty, Spin, Typography, Space, Tag, Button, Grid } from 'antd';
 import { 
   Search, Filter, PlusCircle, TrendingUp, Store,
@@ -9,6 +9,7 @@ import { useListings } from '../hooks/useListings';
 import { useAuth } from '../context/AuthContext';
 import ListingCard from '../components/ListingCard';
 import { CATEGORIES, CATEGORY_COLORS } from '../utils/categories';
+import { searchListings } from '../services/listings';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -34,26 +35,59 @@ const MarketplacePage = () => {
   const screens = useBreakpoint();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searching, setSearching] = useState(false);
+  const searchTimer = useRef(null);
 
+  const campusId = currentUser?.campusId || null;
   const campusName = currentUser?.campusName;
   const pageTitle = campusName ? `${campusName} Marketplace` : 'Campus Marketplace';
 
-  const filtered = useMemo(() => {
-    return listings.filter((item) => {
-      const matchSearch = item.title?.toLowerCase().includes(search.toLowerCase()) ||
-        item.description?.toLowerCase().includes(search.toLowerCase());
-      const matchCategory = category === 'all' || item.category === category;
-      return matchSearch && matchCategory;
-    });
-  }, [listings, search, category]);
+  // Debounced full-text search using PostgreSQL search_vector
+  const performSearch = useCallback(async (query) => {
+    if (!query || query.trim().length < 2) {
+      setSearchResults(null);
+      setSearching(false);
+      return;
+    }
 
+    setSearching(true);
+    try {
+      const results = await searchListings({ query: query.trim(), campusId });
+      setSearchResults(results);
+    } catch (err) {
+      console.error('Search failed:', err);
+      setSearchResults(null);
+    } finally {
+      setSearching(false);
+    }
+  }, [campusId]);
+
+  useEffect(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => performSearch(search), 300);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, [search, performSearch]);
+
+  const displayListings = searchResults !== null ? searchResults : listings;
+
+  const filtered = useMemo(() => {
+    return displayListings.filter((item) => {
+      const matchCategory = category === 'all' || item.category === category;
+      return matchCategory;
+    });
+  }, [displayListings, category]);
+
+  // When category changes, re-apply to current results
   const categoryCounts = useMemo(() => {
-    const counts = { all: listings.length };
-    listings.forEach((item) => {
+    const counts = { all: displayListings.length };
+    displayListings.forEach((item) => {
       counts[item.category] = (counts[item.category] || 0) + 1;
     });
     return counts;
-  }, [listings]);
+  }, [displayListings]);
 
   const activeCategories = useMemo(() => {
     return CATEGORIES.filter((c) => (categoryCounts[c] || 0) > 0);

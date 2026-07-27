@@ -9,6 +9,7 @@ import SignupPage from './pages/SignupPage';
 import MarketplacePage from './pages/MarketplacePage';
 import AddListingPage from './pages/AddListingPage';
 import MyListingsPage from './pages/MyListingsPage';
+import ListingDetailPage from './pages/ListingDetailPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import FAQPage from './pages/FAQPage';
 import ContactPage from './pages/ContactPage';
@@ -73,6 +74,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <MyListingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/listing/:id"
+            element={
+              <ProtectedRoute>
+                <ListingDetailPage />
               </ProtectedRoute>
             }
           />

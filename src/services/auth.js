@@ -52,7 +52,25 @@ export const logoutUser = async () => {
   if (error) throw error;
 };
 
+// Simple in-memory throttle to prevent spam on auth endpoints
+const throttleMap = new Map();
+
+const isThrottled = (key, minIntervalMs = 60000) => {
+  const last = throttleMap.get(key);
+  const now = Date.now();
+  if (last && now - last < minIntervalMs) {
+    return Math.ceil((minIntervalMs - (now - last)) / 1000);
+  }
+  throttleMap.set(key, now);
+  return 0;
+};
+
 export const resendVerification = async (email) => {
+  const wait = isThrottled(`resend:${email}`, 60000);
+  if (wait > 0) {
+    throw new Error(`Please wait ${wait} second${wait > 1 ? 's' : ''} before requesting another verification email.`);
+  }
+
   const { data, error } = await supabase.auth.resend({
     type: 'signup',
     email,
@@ -65,6 +83,11 @@ export const resendVerification = async (email) => {
 };
 
 export const resetPassword = async (email) => {
+  const wait = isThrottled(`reset:${email}`, 60000);
+  if (wait > 0) {
+    throw new Error(`Please wait ${wait} second${wait > 1 ? 's' : ''} before requesting another password reset.`);
+  }
+
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset-password`,
   });

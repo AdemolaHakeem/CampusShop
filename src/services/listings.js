@@ -1,6 +1,13 @@
 import { supabase } from './supabase';
 import { withCampusScope } from './campusFilter';
 
+// Columns to select for listing queries (avoids SELECT *)
+const LISTING_COLUMNS = `
+  id, title, description, price, category,
+  image_url, seller_id, seller_name, whatsapp_number,
+  campus_id, created_at, status, condition
+`;
+
 export const mapListing = (dbListing) => {
   if (!dbListing) return null;
   return {
@@ -15,10 +22,32 @@ export const mapListing = (dbListing) => {
     sellerPhone: dbListing.whatsapp_number,
     campusId: dbListing.campus_id,
     createdAt: dbListing.created_at,
+    status: dbListing.status || 'active',
+    condition: dbListing.condition || null,
   };
 };
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 export const uploadListingImage = async (file) => {
+  // --- Client-side validation ---
+  if (!file) {
+    throw new Error('No file provided');
+  }
+
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error(
+      `Invalid file type "${file.type}". Allowed: JPEG, PNG, WebP, GIF.`
+    );
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error(
+      `File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 5 MB.`
+    );
+  }
+
   // Generate a unique filename to prevent collisions
   const fileExt = file.name.split('.').pop();
   const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
@@ -47,6 +76,59 @@ export const uploadListingImage = async (file) => {
   return publicUrl;
 };
 
+/**
+ * Full-text search across listings using PostgreSQL tsvector.
+ * Returns only active listings scoped to the user's campus.
+ */
+export const searchListings = async ({ query, campusId, limit = 20 }) => {
+  if (!query || query.trim().length < 2) {
+    // Return all active listings when query is too short
+    let dbQuery = supabase
+      .from('listings')
+      .select(LISTING_COLUMNS)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    dbQuery = withCampusScope(dbQuery, campusId);
+
+    const { data, error } = await dbQuery;
+    if (error) throw error;
+    return (data || []).map(mapListing);
+  }
+
+  try {
+    let dbQuery = supabase
+      .from('listings')
+      .select(LISTING_COLUMNS)
+      .eq('status', 'active')
+      .textSearch('search_vector', query.trim(), {
+        type: 'websearch',
+        config: 'english',
+      })
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    dbQuery = withCampusScope(dbQuery, campusId);
+
+    const { data, error } = await dbQuery;
+    if (error) throw error;
+    return (data || []).map(mapListing);
+  } catch (err) {
+    console.error('Full-text search error, falling back to client-side:', err);
+    // Fallback: fetch all and filter client-side
+    return new Promise((resolve) => {
+      const unsub = subscribeToAllListings(campusId, (listings) => {
+        unsub();
+        const q = query.toLowerCase();
+        resolve(listings.filter(
+          (l) => l.title?.toLowerCase().includes(q) || l.description?.toLowerCase().includes(q)
+        ));
+      });
+    });
+  }
+};
+
 export const addListing = async (data) => {
   const { data: insertedData, error } = await supabase
     .from('listings')
@@ -56,18 +138,38 @@ export const addListing = async (data) => {
         description: data.description,
         price: data.price,
         category: data.category,
+        condition: data.condition || null,
         image_url: data.imageURL || '',
         seller_id: data.sellerId,
         seller_name: data.sellerName,
         whatsapp_number: data.sellerPhone || '',
         campus_id: data.campusId || null,
+        status: 'active',
       }
     ])
-    .select()
+    .select(LISTING_COLUMNS)
     .single();
 
   if (error) throw error;
   return mapListing(insertedData);
+};
+
+export const markListingAsSold = async (id) => {
+  const { error } = await supabase
+    .from('listings')
+    .update({ status: 'sold' })
+    .eq('id', id);
+
+  if (error) throw error;
+};
+
+export const markListingAsActive = async (id) => {
+  const { error } = await supabase
+    .from('listings')
+    .update({ status: 'active' })
+    .eq('id', id);
+
+  if (error) throw error;
 };
 
 export const deleteListing = async (id) => {
@@ -92,7 +194,8 @@ export const subscribeToAllListings = (campusId, callback) => {
     try {
       let query = supabase
         .from('listings')
-        .select('*')
+        .select(LISTING_COLUMNS)
+        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       query = withCampusScope(query, campusId);
@@ -140,7 +243,7 @@ export const subscribeToUserListings = (userId, campusId, callback) => {
     try {
       let query = supabase
         .from('listings')
-        .select('*')
+        .select(LISTING_COLUMNS)
         .eq('seller_id', userId)
         .order('created_at', { ascending: false });
 
