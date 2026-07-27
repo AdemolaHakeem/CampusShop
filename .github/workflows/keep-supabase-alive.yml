@@ -27,15 +27,61 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Query listings table
+      - name: 🔍 Check secrets are configured
+        id: check-secrets
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          echo "🔄 Pinging Supabase to prevent auto-pause..."
-          echo "   URL: ${SUPABASE_URL}"
+          # Support both SUPABASE_URL and VITE_SUPABASE_URL secret names
+          if [ -z "$URL" ]; then
+            URL="${{ secrets.VITE_SUPABASE_URL }}"
+          fi
 
-          # A simple SELECT id LIMIT 1 generates real database activity
+          if [ -z "$URL" ]; then
+            echo "❌ SUPABASE_URL secret is not set!"
+            echo ""
+            echo "   Go to your repo → Settings → Secrets and variables → Actions"
+            echo "   Add these two secrets:"
+            echo "     SUPABASE_URL     = https://xxxxxxxxxxxx.supabase.co"
+            echo "     SUPABASE_ANON_KEY = your anon public key"
+            echo ""
+            echo "   Or use VITE_SUPABASE_URL (the name your app already uses)."
+            exit 1
+          fi
+
+          if [ -z "$KEY" ]; then
+            echo "❌ SUPABASE_ANON_KEY secret is not set!"
+            echo ""
+            echo "   Go to your repo → Settings → Secrets and variables → Actions"
+            echo "   Add a secret named SUPABASE_ANON_KEY with your anon public key."
+            exit 1
+          fi
+
+          # Validate URL format
+          if [[ ! "$URL" =~ ^https?://[^/]+$ ]]; then
+            echo "❌ SUPABASE_URL looks wrong: '$URL'"
+            echo ""
+            echo "   It should be just the base URL, like:"
+            echo "   https://xxxxxxxxxxxx.supabase.co"
+            echo ""
+            echo "   No trailing slashes, no paths like /rest/v1/"
+            exit 1
+          fi
+
+          # Save to env for next step
+          echo "supabase_url=$URL" >> $GITHUB_OUTPUT
+          echo "supabase_key=$KEY" >> $GITHUB_OUTPUT
+          echo "✅ Secrets found and valid!"
+
+      - name: 📡 Ping listings table
+        env:
+          SUPABASE_URL: ${{ steps.check-secrets.outputs.supabase_url }}
+          SUPABASE_ANON_KEY: ${{ steps.check-secrets.outputs.supabase_key }}
+        run: |
+          echo "🔄 Pinging: ${SUPABASE_URL}/rest/v1/listings"
+          echo ""
+
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "${SUPABASE_URL}/rest/v1/listings?select=id&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
@@ -43,22 +89,26 @@ jobs:
             --connect-timeout 15 \
             --max-time 30)
 
-          echo "   HTTP status: ${HTTP_STATUS}"
+          echo "   Response: HTTP ${HTTP_STATUS}"
 
           if [ "$HTTP_STATUS" = "200" ]; then
+            echo ""
             echo "✅ Supabase is active! Project will not be paused."
           elif [ "$HTTP_STATUS" = "540" ]; then
+            echo ""
             echo "⚠️  Project is PAUSED (HTTP 540)."
-            echo "   Go to https://supabase.com/dashboard to resume it manually,"
-            echo "   then this workflow will keep it alive going forward."
+            echo "   Go to https://supabase.com/dashboard to resume it manually."
+            echo "   After resuming, this workflow will keep it alive."
           else
-            echo "⚠️  Unexpected status: HTTP ${HTTP_STATUS}"
+            echo ""
+            echo "⚠️  Unexpected response: HTTP ${HTTP_STATUS}"
+            echo "   (This is normal if the project hasn't been set up yet.)"
           fi
 
-      - name: Done
+      - name: ✅ Done
         run: |
           echo ""
           echo "============================================"
-          echo "  ✅ Ping completed at $(date)"
-          echo "  ✅ Next run: 6 hours from now"
+          echo "  Ping completed at $(date)"
+          echo "  Next run: 6 hours from now"
           echo "============================================"
