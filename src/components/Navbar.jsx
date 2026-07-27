@@ -8,6 +8,7 @@ import {
   User,
   Search,
   Bell,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { logoutUser } from '../services/auth';
@@ -30,6 +31,8 @@ const Navbar = () => {
 
   if (!currentUser) return null;
 
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
+
   const menuItems = [
     {
       key: '/market',
@@ -46,6 +49,13 @@ const Navbar = () => {
       icon: <List size={16} />,
       label: 'My Listings',
     },
+    ...(isAdmin
+      ? [{
+          key: '/admin',
+          icon: <Shield size={16} />,
+          label: 'Admin',
+        }]
+      : []),
   ];
 
   const userMenuItems = [

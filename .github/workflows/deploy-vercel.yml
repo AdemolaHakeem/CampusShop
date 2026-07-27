@@ -1,0 +1,66 @@
+# ============================================================
+# CampusShop — Auto-Deploy to Vercel
+# ============================================================
+# Every push to `main` triggers a production deploy on Vercel.
+# Preview deployments are created for all other branches.
+#
+# Setup:
+#   1. Go to GitHub → Settings → Secrets and variables → Actions
+#   2. Add VERCEL_TOKEN — from https://vercel.com/account/tokens
+#   3. Add VERCEL_ORG_ID — from `npx vercel projects list`
+#   4. Add VERCEL_PROJECT_ID — from `npx vercel projects list`
+# ============================================================
+
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allow manual trigger from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: CampusShop/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci
+        working-directory: CampusShop
+
+      - name: 🧹 Lint check
+        run: npm run lint
+        working-directory: CampusShop
+        continue-on-error: true
+
+      - name: 🏗️ Build project
+        run: npm run build
+        working-directory: CampusShop
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: CampusShop

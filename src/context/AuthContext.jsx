@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 /**
  * Merge user_metadata with the live profiles table so that
- * changes made in the profiles table (e.g. updated campus/phone)
+ * changes made in the profiles table (e.g. updated campus/phone/role)
  * are reflected immediately instead of waiting for re-login.
  */
 const enrichWithProfile = async (user) => {
@@ -20,13 +20,14 @@ const enrichWithProfile = async (user) => {
     phone: user.user_metadata?.phone || '',
     campusId: user.user_metadata?.campus_id || null,
     campusName: user.user_metadata?.campus_name || null,
+    role: 'user', // default role
   };
 
   // Overlay the live profile from the database (fresh data)
   try {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('name, phone, campus_id')
+      .select('name, phone, campus_id, role')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -34,6 +35,7 @@ const enrichWithProfile = async (user) => {
       enriched.displayName = profile.name || enriched.displayName;
       enriched.phone = profile.phone || enriched.phone;
       enriched.campusId = profile.campus_id || enriched.campusId;
+      enriched.role = profile.role || 'user';
     }
   } catch {
     // Profile fetch is non-critical — fall back to metadata

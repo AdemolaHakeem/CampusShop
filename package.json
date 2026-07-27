@@ -9,9 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "seed": "node scripts/seed-campuses.js"
-    
   },
   "dependencies": {
+    "@sentry/react": "^10.68.0",
     "@supabase/supabase-js": "^2.106.1",
     "antd": "^6.4.3",
     "lucide-react": "^1.17.0",

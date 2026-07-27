@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { ConfigProvider, Layout } from 'antd';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -20,6 +21,11 @@ import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
 import HowItWorksPage from './pages/HowItWorksPage';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminListingsPage from './pages/admin/AdminListingsPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminCampusesPage from './pages/admin/AdminCampusesPage';
 
 const { Content } = Layout;
 
@@ -33,7 +39,10 @@ const AppContent = () => {
     '/faq', '/contact', '/about', '/help', '/safety',
     '/terms', '/privacy', '/community-guidelines', '/how-it-works',
   ];
-  const showNavbar = currentUser && !noNavbarRoutes.includes(location.pathname);
+
+  // Admin routes use their own layout (no main navbar)
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const showNavbar = currentUser && !noNavbarRoutes.includes(location.pathname) && !isAdminRoute;
 
   return (
     <Layout className="app-layout">
@@ -85,6 +94,21 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="listings" element={<AdminListingsPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="campuses" element={<AdminCampusesPage />} />
+          </Route>
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Content>
