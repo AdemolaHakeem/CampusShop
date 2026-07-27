@@ -1,0 +1,26 @@
+{
+  "name": "CampusShop — Campus Marketplace",
+  "short_name": "CampusShop",
+  "description": "Buy & Sell Within Your Campus — The #1 Campus Marketplace for Students",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fb",
+  "theme_color": "#1a1f36",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "shopping", "lifestyle"],
+  "lang": "en-NG"
+}

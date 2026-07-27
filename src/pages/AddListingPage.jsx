@@ -19,6 +19,7 @@ const AddListingPage = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [additionalImages, setAdditionalImages] = useState([]);
   const [form] = Form.useForm();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -42,6 +43,22 @@ const AddListingPage = () => {
     }
   };
 
+  const handleAdditionalUpload = async (options) => {
+    const { file, onSuccess, onError } = options;
+    setUploading(true);
+    try {
+      const publicUrl = await uploadListingImage(file);
+      setAdditionalImages(prev => [...prev, publicUrl]);
+      message.success('Additional image uploaded!');
+      onSuccess("Ok");
+    } catch (err) {
+      message.error(err.message || 'Upload failed');
+      onError(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -51,7 +68,8 @@ const AddListingPage = () => {
         description: values.description,
         category: values.category,
         condition: values.condition || null,
-        imageURL: values.imageURL || '',
+        imageURL: values.imageURL || (additionalImages[0] || ''),
+        images: additionalImages,
         sellerId: currentUser.uid,
         sellerName: currentUser.displayName || 'Anonymous',
         sellerPhone: values.sellerPhone || '',
@@ -332,6 +350,56 @@ const AddListingPage = () => {
                     </Text>
                   </Col>
                 </Row>
+
+                {/* Additional images upload */}
+                <div style={{ marginTop: 16 }}>
+                  <Text strong style={{ fontSize: 13, color: 'var(--text-primary)', display: 'block', marginBottom: 8 }}>
+                    Additional Photos (optional)
+                  </Text>
+                  <Row gutter={[8, 8]}>
+                    {additionalImages.map((url, idx) => (
+                      <Col key={idx}>
+                        <div style={{
+                          width: 80, height: 80, borderRadius: 'var(--radius-md)',
+                          overflow: 'hidden', border: '1px solid var(--border-color)',
+                          position: 'relative',
+                        }}>
+                          <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <Button
+                            type="primary"
+                            danger
+                            shape="circle"
+                            size="small"
+                            icon={<Plus size={10} style={{ transform: 'rotate(45deg)' }} />}
+                            onClick={() => setAdditionalImages(prev => prev.filter((_, i) => i !== idx))}
+                            style={{ position: 'absolute', top: 2, right: 2, width: 20, height: 20, minWidth: 0 }}
+                          />
+                        </div>
+                      </Col>
+                    ))}
+                    {additionalImages.length < 5 && (
+                      <Col>
+                        <Upload.Dragger
+                          accept="image/*"
+                          showUploadList={false}
+                          customRequest={handleAdditionalUpload}
+                          disabled={uploading}
+                          style={{
+                            width: 80, height: 80, padding: 0,
+                            background: 'var(--bg-card)',
+                            borderRadius: 'var(--radius-md)',
+                            border: '2px dashed var(--border-color)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Plus size={20} color="var(--text-tertiary)" />
+                        </Upload.Dragger>
+                      </Col>
+                    )}
+                  </Row>
+                </div>
               </div>
 
               <Form.Item style={{ marginTop: 8, marginBottom: 0 }}>

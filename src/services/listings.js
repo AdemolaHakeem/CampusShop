@@ -5,7 +5,7 @@ import { withCampusScope } from './campusFilter';
 const LISTING_COLUMNS = `
   id, title, description, price, category,
   image_url, seller_id, seller_name, whatsapp_number,
-  campus_id, created_at, status, condition
+  campus_id, created_at, status, condition, images
 `;
 
 export const mapListing = (dbListing) => {
@@ -17,6 +17,7 @@ export const mapListing = (dbListing) => {
     price: dbListing.price,
     category: dbListing.category,
     imageURL: dbListing.image_url,
+    images: dbListing.images || [],
     sellerId: dbListing.seller_id,
     sellerName: dbListing.seller_name,
     sellerPhone: dbListing.whatsapp_number,
@@ -139,7 +140,8 @@ export const addListing = async (data) => {
         price: data.price,
         category: data.category,
         condition: data.condition || null,
-        image_url: data.imageURL || '',
+        image_url: data.imageURL || (data.images?.[0] || ''),
+        images: data.images || [],
         seller_id: data.sellerId,
         seller_name: data.sellerName,
         whatsapp_number: data.sellerPhone || '',
@@ -182,14 +184,20 @@ export const deleteListing = async (id) => {
 };
 
 /**
- * Subscribe to listings scoped to the user's campus (or global).
- * Listings where campus_id IS NULL (global feed) are always included.
- *
- * @param {string|null} campusId - the user's campus_id
- * @param {function} callback - receives the mapped listings array
- * @returns {function} unsubscribe
+ * Incremental approach for subscribeToAllListings:
+ * - Initial fetch: gets the full listing set (cached locally per subscription).
+ * - On INSERT/UPDATE/DELETE: patch the local cache instead of full re-fetch.
+ * - Falls back to full re-fetch for safety.
  */
 export const subscribeToAllListings = (campusId, callback) => {
+  const campusIdVal = campusId;
+  let cache = []; // local per-subscription, not module-level
+
+  const isInScope = (item) => {
+    if (!campusIdVal) return true;
+    return !item.campus_id || item.campus_id === campusIdVal;
+  };
+
   const fetchAndCallback = async () => {
     try {
       let query = supabase
@@ -198,13 +206,67 @@ export const subscribeToAllListings = (campusId, callback) => {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
-      query = withCampusScope(query, campusId);
+      query = withCampusScope(query, campusIdVal);
 
       const { data, error } = await query;
       if (error) throw error;
-      callback(data.map(mapListing));
+      cache = data.map(mapListing);
+      callback([...cache]);
     } catch (err) {
       console.error('Error fetching listings:', err);
+    }
+  };
+
+  const handleChange = async (payload) => {
+    try {
+      if (payload.eventType === 'INSERT') {
+        const { data } = await supabase
+          .from('listings')
+          .select(LISTING_COLUMNS)
+          .eq('id', payload.new.id)
+          .single();
+
+        if (data) {
+          const mapped = mapListing(data);
+          if (isInScope(mapped)) {
+            cache = [mapped, ...cache];
+            callback([...cache]);
+            return;
+          }
+        }
+      }
+
+      if (payload.eventType === 'UPDATE') {
+        const idx = cache.findIndex((l) => l.id === payload.new.id);
+        if (idx !== -1) {
+          const { data } = await supabase
+            .from('listings')
+            .select(LISTING_COLUMNS)
+            .eq('id', payload.new.id)
+            .single();
+
+          if (data) {
+            cache[idx] = mapListing(data);
+            callback([...cache]);
+            return;
+          }
+        }
+      }
+
+      if (payload.eventType === 'DELETE') {
+        const removed = cache.filter((l) => l.id !== payload.old.id);
+        if (removed.length !== cache.length) {
+          cache = removed;
+          callback([...cache]);
+          return;
+        }
+      }
+
+      // Fallback: full re-fetch
+      fetchAndCallback();
+    } catch (err) {
+      console.error('Incremental update error, falling back to full fetch:', err);
+      fetchAndCallback();
     }
   };
 
@@ -217,27 +279,24 @@ export const subscribeToAllListings = (campusId, callback) => {
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'listings' },
-      () => {
-        fetchAndCallback();
-      }
+      handleChange
     )
     .subscribe();
 
   return () => {
+    cache = [];
     supabase.removeChannel(channel);
   };
 };
 
 /**
- * Subscribe to a specific user's listings (scoped to campus for consistency).
- *
- * @param {string} userId
- * @param {string|null} campusId
- * @param {function} callback
- * @returns {function} unsubscribe
+ * Subscribe to a specific user's listings (with incremental updates).
  */
 export const subscribeToUserListings = (userId, campusId, callback) => {
   if (!userId) return () => {};
+
+  let userCache = [];
+  const campusIdVal = campusId;
 
   const fetchAndCallback = async () => {
     try {
@@ -247,20 +306,67 @@ export const subscribeToUserListings = (userId, campusId, callback) => {
         .eq('seller_id', userId)
         .order('created_at', { ascending: false });
 
-      query = withCampusScope(query, campusId);
+      query = withCampusScope(query, campusIdVal);
 
       const { data, error } = await query;
       if (error) throw error;
-      callback(data.map(mapListing));
+      userCache = data.map(mapListing);
+      callback([...userCache]);
     } catch (err) {
       console.error('Error fetching user listings:', err);
     }
   };
 
-  // Fetch initial data
+  const handleChange = async (payload) => {
+    try {
+      if (payload.eventType === 'INSERT' && payload.new.seller_id === userId) {
+        const { data } = await supabase
+          .from('listings')
+          .select(LISTING_COLUMNS)
+          .eq('id', payload.new.id)
+          .single();
+
+        if (data) {
+          userCache = [mapListing(data), ...userCache];
+          callback([...userCache]);
+          return;
+        }
+      }
+
+      if (payload.eventType === 'UPDATE' && payload.new.seller_id === userId) {
+        const idx = userCache.findIndex((l) => l.id === payload.new.id);
+        if (idx !== -1) {
+          const { data } = await supabase
+            .from('listings')
+            .select(LISTING_COLUMNS)
+            .eq('id', payload.new.id)
+            .single();
+
+          if (data) {
+            userCache[idx] = mapListing(data);
+            callback([...userCache]);
+            return;
+          }
+        }
+      }
+
+      if (payload.eventType === 'DELETE') {
+        const removed = userCache.filter((l) => l.id !== payload.old.id);
+        if (removed.length !== userCache.length) {
+          userCache = removed;
+          callback([...userCache]);
+          return;
+        }
+      }
+
+      fetchAndCallback();
+    } catch (err) {
+      fetchAndCallback();
+    }
+  };
+
   fetchAndCallback();
 
-  // Subscribe to changes
   const channel = supabase
     .channel(`public:listings:user:${userId}`)
     .on(
@@ -271,13 +377,12 @@ export const subscribeToUserListings = (userId, campusId, callback) => {
         table: 'listings',
         filter: `seller_id=eq.${userId}`,
       },
-      () => {
-        fetchAndCallback();
-      }
+      handleChange
     )
     .subscribe();
 
   return () => {
+    userCache = [];
     supabase.removeChannel(channel);
   };
 };

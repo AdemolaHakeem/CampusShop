@@ -12,10 +12,19 @@ if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
     integrations: [Sentry.replayIntegration()],
-    tracesSampleRate: 0.2,          // 20% of transactions for performance
-    replaysSessionSampleRate: 0.1,  // 10% of sessions replayed
-    replaysOnErrorSampleRate: 1.0,  // 100% of errors replayed
+    tracesSampleRate: 0.2,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
     environment: import.meta.env.MODE || 'development',
+  });
+}
+
+// Register service worker for PWA support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('Service worker registration failed:', err);
+    });
   });
 }
 

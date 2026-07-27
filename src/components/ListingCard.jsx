@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, Tag, Typography, Space, Tooltip } from 'antd';
-import { MessageCircle, Clock, Trash2, CheckCircle, Star } from 'lucide-react';
+import { MessageCircle, Clock, Trash2, CheckCircle, Star, AlertTriangle } from 'lucide-react';
 import { formatPrice, getWhatsAppLink, timeAgo } from '../utils/helpers';
 import { CATEGORY_COLORS } from '../utils/categories';
+import HeartToggle from './HeartToggle';
 
 const { Meta } = Card;
 const { Text, Paragraph } = Typography;
@@ -85,6 +86,11 @@ const ListingCard = ({ listing, showActions = false, onDelete, onMarkSold }) => 
           <div className="listing-card-price-badge">
             {formatPrice(price)}
           </div>
+          {!isSold && (
+            <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 2 }}>
+              <HeartToggle listingId={listing.id} size={16} />
+            </div>
+          )}
           {isSold && (
             <div className="listing-card-sold-overlay">
               <CheckCircle size={20} />
@@ -130,12 +136,23 @@ const ListingCard = ({ listing, showActions = false, onDelete, onMarkSold }) => 
           }
         />
         <div className="listing-card-footer">
+          <Text 
+            type="secondary" 
+            style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/seller/${sellerId}`);
+            }}
+          >
+            {sellerName}
+          </Text>
           <Text type="secondary" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
             <Clock size={12} />
             {timeAgo(createdAt)}
           </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {sellerName}
+          <Text type="secondary" style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Clock size={12} />
+            {timeAgo(createdAt)}
           </Text>
         </div>
       </div>

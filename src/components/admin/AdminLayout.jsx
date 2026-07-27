@@ -11,6 +11,7 @@ import {
   LogOut,
   User,
   ArrowLeft,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { logoutUser } from '../../services/auth';
@@ -49,6 +50,11 @@ const AdminLayout = () => {
       key: '/admin/campuses',
       icon: <Building2 size={18} />,
       label: 'Campuses',
+    },
+    {
+      key: '/admin/reports',
+      icon: <AlertTriangle size={18} />,
+      label: 'Reports',
     },
   ];
 

@@ -26,6 +26,9 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminListingsPage from './pages/admin/AdminListingsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminCampusesPage from './pages/admin/AdminCampusesPage';
+import AdminReportsPage from './pages/admin/AdminReportsPage';
+import SavedItemsPage from './pages/SavedItemsPage';
+import SellerProfilePage from './pages/SellerProfilePage';
 
 const { Content } = Layout;
 
@@ -94,6 +97,22 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/saved"
+            element={
+              <ProtectedRoute>
+                <SavedItemsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/seller/:id"
+            element={
+              <ProtectedRoute>
+                <SellerProfilePage />
+              </ProtectedRoute>
+            }
+          />
           {/* Admin Routes */}
           <Route
             path="/admin"
@@ -107,6 +126,7 @@ const AppContent = () => {
             <Route path="listings" element={<AdminListingsPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="campuses" element={<AdminCampusesPage />} />
+            <Route path="reports" element={<AdminReportsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

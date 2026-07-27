@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Button, Spin, Tag, Card, Divider, Space, Rate, Input, message, Row, Col, Empty, Grid } from 'antd';
 import {
-  ArrowLeft, MessageCircle, Clock, User, Phone,
-  CheckCircle, Star, Send,
+  ArrowLeft, MessageCircle, Clock, User, Phone, ChevronLeft, ChevronRight,
+  CheckCircle, Star, Send, AlertTriangle, Image as ImageIcon,
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { mapListing } from '../services/listings';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice, getWhatsAppLink, timeAgo } from '../utils/helpers';
 import { CATEGORY_COLORS } from '../utils/categories';
+import HeartToggle from '../components/HeartToggle';
+import ReportListingModal from '../components/ReportListingModal';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -33,6 +35,8 @@ const ListingDetailPage = () => {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -128,19 +132,40 @@ const ListingDetailPage = () => {
   const l = listing; // shorter alias
   const hasReviewed = currentUser && reviews.some(r => r.reviewer_id === currentUser.id);
 
+  // Collect all images (single + multi)
+  const allImages = [listing.imageURL, ...(listing.images || [])].filter(Boolean);
+  const allImagesDeduped = [...new Set(allImages)];
+  const displayImages = allImagesDeduped.length > 0 ? allImagesDeduped : [listing.imageURL || fallbackImg];
+
   return (
     <div className="listing-detail-page" style={{ maxWidth: 1000, margin: '0 auto', padding: '24px', animation: 'pageIn 0.35s ease-out' }}>
-      <Button
-        type="text"
-        icon={<ArrowLeft size={16} />}
-        onClick={() => navigate('/market')}
-        style={{ color: 'var(--text-secondary)', marginBottom: 16, padding: '4px 0' }}
-      >
-        Back to Marketplace
-      </Button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <Button
+          type="text"
+          icon={<ArrowLeft size={16} />}
+          onClick={() => navigate('/market')}
+          style={{ color: 'var(--text-secondary)', padding: '4px 0' }}
+        >
+          Back to Marketplace
+        </Button>
+        <Space>
+          {!isSold && <HeartToggle listingId={listing.id} size={20} />}
+          {!isSold && (
+            <Button
+              type="text"
+              size="small"
+              icon={<AlertTriangle size={16} color="#ef4444" />}
+              onClick={(e) => { e.stopPropagation(); setReportModalOpen(true); }}
+              style={{ color: '#ef4444' }}
+            >
+              Report
+            </Button>
+          )}
+        </Space>
+      </div>
 
       <Row gutter={[32, 32]}>
-        {/* Image */}
+        {/* Image gallery */}
         <Col xs={24} md={12}>
           <Card
             style={{
@@ -151,25 +176,101 @@ const ListingDetailPage = () => {
             }}
             bodyStyle={{ padding: 0 }}
           >
-            <img
-              src={listing.imageURL || fallbackImg}
-              alt={listing.title}
-              style={{
-                width: '100%',
-                height: screens.md ? 400 : 280,
-                objectFit: 'cover',
-                display: 'block',
-                opacity: isSold ? 0.5 : 1,
-              }}
-              onError={(e) => { e.target.src = fallbackImg; }}
-            />
-            {isSold && (
+            <div style={{ position: 'relative' }}>
+              <img
+                src={displayImages[currentImageIndex]}
+                alt={listing.title}
+                style={{
+                  width: '100%',
+                  height: screens.md ? 400 : 280,
+                  objectFit: 'cover',
+                  display: 'block',
+                  opacity: isSold ? 0.5 : 1,
+                }}
+                onError={(e) => { e.target.src = fallbackImg; }}
+              />
+
+              {/* Image navigation arrows */}
+              {displayImages.length > 1 && !isSold && (
+                <>
+                  <Button
+                    type="text"
+                    icon={<ChevronLeft size={20} />}
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => prev === 0 ? displayImages.length - 1 : prev - 1); }}
+                    style={{
+                      position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)',
+                      background: 'rgba(255,255,255,0.8)', border: 'none',
+                      width: 36, height: 36, borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  />
+                  <Button
+                    type="text"
+                    icon={<ChevronRight size={20} />}
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => prev === displayImages.length - 1 ? 0 : prev + 1); }}
+                    style={{
+                      position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                      background: 'rgba(255,255,255,0.8)', border: 'none',
+                      width: 36, height: 36, borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  />
+                </>
+              )}
+
+              {/* Image dots indicator */}
+              {displayImages.length > 1 && (
+                <div style={{
+                  position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+                  display: 'flex', gap: 6,
+                }}>
+                  {displayImages.map((_, idx) => (
+                    <div
+                      key={idx}
+                      onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }}
+                      style={{
+                        width: 8, height: 8, borderRadius: '50%',
+                        background: idx === currentImageIndex ? '#fff' : 'rgba(255,255,255,0.5)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {isSold && (
+                <div style={{
+                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                  background: 'rgba(0,0,0,0.7)', color: '#fff', padding: '12px 24px', borderRadius: 'var(--radius-md)',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700,
+                }}>
+                  <CheckCircle size={24} /> SOLD
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnail strip */}
+            {displayImages.length > 1 && (
               <div style={{
-                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                background: 'rgba(0,0,0,0.7)', color: '#fff', padding: '12px 24px', borderRadius: 'var(--radius-md)',
-                display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700,
+                display: 'flex', gap: 8, padding: 12, overflowX: 'auto',
+                borderTop: '1px solid var(--border-color)',
               }}>
-                <CheckCircle size={24} /> SOLD
+                {displayImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    style={{
+                      width: 56, height: 56, borderRadius: 8, overflow: 'hidden',
+                      cursor: 'pointer', flexShrink: 0,
+                      border: idx === currentImageIndex ? '2px solid #2563eb' : '2px solid transparent',
+                      opacity: idx === currentImageIndex ? 1 : 0.6,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ))}
               </div>
             )}
           </Card>
@@ -204,8 +305,12 @@ const ListingDetailPage = () => {
           <Divider style={{ margin: '16px 0' }} />
 
           <Space direction="vertical" size={12} style={{ width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
-              <User size={16} /> <Text>{l.sellerName}</Text>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--accent-blue)', fontSize: 14, cursor: 'pointer' }}
+              onClick={() => navigate(`/seller/${l.sellerId}`)}
+            >
+              <User size={16} /> <Text style={{ color: 'var(--accent-blue)' }}>{l.sellerName}</Text>
+              <Tag style={{ fontSize: 10, border: 'none', background: 'transparent', padding: 0, color: 'var(--accent-blue)', cursor: 'pointer' }}>View Profile →</Tag>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)', fontSize: 14 }}>
               <Clock size={16} /> <Text>{timeAgo(l.createdAt)}</Text>
@@ -251,6 +356,13 @@ const ListingDetailPage = () => {
           )}
         </Col>
       </Row>
+
+      {/* Report Listing Modal */}
+      <ReportListingModal
+        listingId={id}
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+      />
 
       {/* Reviews Section */}
       <Divider style={{ margin: '40px 0 24px' }} />

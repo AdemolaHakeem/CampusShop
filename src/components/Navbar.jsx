@@ -9,6 +9,7 @@ import {
   Search,
   Bell,
   Shield,
+  Heart,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { logoutUser } from '../services/auth';
@@ -38,6 +39,11 @@ const Navbar = () => {
       key: '/market',
       icon: <Store size={16} />,
       label: 'Marketplace',
+    },
+    {
+      key: '/saved',
+      icon: <Heart size={16} />,
+      label: 'Saved',
     },
     {
       key: '/add-listing',
