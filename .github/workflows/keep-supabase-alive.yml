@@ -32,29 +32,39 @@ jobs:
         env:
           URL: ${{ secrets.SUPABASE_URL }}
           KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
-          # Support both SUPABASE_URL and VITE_SUPABASE_URL secret names
-          if [ -z "$URL" ]; then
-            URL="${{ secrets.VITE_SUPABASE_URL }}"
+          # Support both naming conventions (SUPABASE_* or VITE_SUPABASE_*)
+          if [ -z "$URL" ] && [ -n "$VITE_URL" ]; then
+            URL="$VITE_URL"
+          fi
+
+          if [ -z "$KEY" ] && [ -n "$VITE_KEY" ]; then
+            KEY="$VITE_KEY"
           fi
 
           if [ -z "$URL" ]; then
-            echo "❌ SUPABASE_URL secret is not set!"
+            echo "❌ URL secret is not set!"
             echo ""
             echo "   Go to your repo → Settings → Secrets and variables → Actions"
-            echo "   Add these two secrets:"
-            echo "     SUPABASE_URL     = https://xxxxxxxxxxxx.supabase.co"
-            echo "     SUPABASE_ANON_KEY = your anon public key"
+            echo "   Add a secret named either:"
+            echo "     SUPABASE_URL     (recommended)"
+            echo "     VITE_SUPABASE_URL (your app's env var name)"
             echo ""
-            echo "   Or use VITE_SUPABASE_URL (the name your app already uses)."
+            echo "   Value: https://xxxxxxxxxxxx.supabase.co"
             exit 1
           fi
 
           if [ -z "$KEY" ]; then
-            echo "❌ SUPABASE_ANON_KEY secret is not set!"
+            echo "❌ API key secret is not set!"
             echo ""
             echo "   Go to your repo → Settings → Secrets and variables → Actions"
-            echo "   Add a secret named SUPABASE_ANON_KEY with your anon public key."
+            echo "   Add a secret named either:"
+            echo "     SUPABASE_ANON_KEY      (recommended)"
+            echo "     VITE_SUPABASE_ANON_KEY (your app's env var name)"
+            echo ""
+            echo "   Value: your anon public key"
             exit 1
           fi
 
